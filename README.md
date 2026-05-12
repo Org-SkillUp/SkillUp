@@ -6,7 +6,7 @@
 | Luiz Henrique Silva Fontes  | Tarefas |
 | Anthony Yuri Feitosa França | Trilhas |
 | Guylherme Lira Medeiros da Cruz | Home |
-|   | Login e Criar Conta |
+| Kaua Marques Emidio  | Login e Criar Conta |
 |   | Recuperar Senha |
 
 
