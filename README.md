@@ -4,7 +4,7 @@
 |---|---|
 |   | Tela de Conta |
 |   | Tarefas |
-|   | Trilhas |
+| Anthony Yuri Feitosa França | Trilhas |
 |   | Home |
 |   | Login e Criar Conta |
 |   | Recuperar Senha |
