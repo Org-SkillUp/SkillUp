@@ -1,2 +1,1 @@
-# SkillUp
-#kaua lindo
+# Skillup
