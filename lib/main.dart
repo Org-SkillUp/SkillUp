@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:proj/core/theme/app_theme.dart';
+import 'package:proj/repositories/sample_repository.dart';
+import 'package:proj/services/api_services.dart';
+import 'package:proj/viewmodels/sample_view_model.dart';
+import 'package:proj/views/home_page.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    final apiService = ApiService();
+    final repository = SampleRepository(apiService);
+
+    return ChangeNotifierProvider(
+      create: (_) => SampleViewModel(repository)..loadSample(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: "Teste",
+        theme: AppTheme.lightTheme,
+        home: const HomePage(),
       ),
     );
   }
