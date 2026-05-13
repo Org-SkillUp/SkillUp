@@ -1,19 +1,38 @@
 import 'package:flutter/material.dart';
+import 'features/auth/pages/login_page.dart';
+import 'features/auth/pages/signup_page.dart';
+import 'features/auth/routes/auth_routes.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: AuthRoutes.login,
+      routes: {
+        AuthRoutes.login: (_) => const LoginPage(),
+        AuthRoutes.signup: (_) => const SignupPage(),
+        AuthRoutes.forgotPassword: (_) => const ForgotPasswordPlaceholderPage(),
+      },
+    );
+  }
+}
+
+class ForgotPasswordPlaceholderPage extends StatelessWidget {
+  const ForgotPasswordPlaceholderPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Recuperar senha')),
+      body: const Center(
+        child: Text('Tela reservada para recuperação de senha.'),
       ),
     );
   }
