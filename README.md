@@ -7,6 +7,6 @@
 | Anthony Yuri Feitosa França | Trilhas |
 | Guylherme Lira Medeiros da Cruz | Home |
 | Kaua Marques Emidio  | Login e Criar Conta |
-|   | Recuperar Senha |
+|  Luiz Felipe Aranhas Souza | Recuperar Senha |
 
 
