@@ -4,11 +4,11 @@ import 'features/auth/pages/signup_page.dart';
 import 'features/auth/routes/auth_routes.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const SkillUp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SkillUp extends StatelessWidget {
+  const SkillUp({super.key});
 
   @override
   Widget build(BuildContext context) {
