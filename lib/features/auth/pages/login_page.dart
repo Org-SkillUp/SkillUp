@@ -1,3 +1,4 @@
+import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:flutter/material.dart';
 import '../routes/auth_routes.dart';
 
@@ -48,7 +49,7 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                _buildTextField(
+                TextFieldBuilder.buildTextField(
                   hint: 'Email ou Usuário',
                   fillColor: fieldColor,
                 ),
@@ -66,7 +67,7 @@ class LoginPage extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                _buildTextField(
+                TextFieldBuilder.buildTextField(
                   hint: 'Senha',
                   fillColor: fieldColor,
                   obscureText: true,
@@ -136,35 +137,6 @@ class LoginPage extends StatelessWidget {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-
-  static Widget _buildTextField({
-    required String hint,
-    required Color fillColor,
-    bool obscureText = false,
-  }) {
-    return TextField(
-      obscureText: obscureText,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white70),
-        filled: true,
-        fillColor: fillColor,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white70),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: Colors.white),
         ),
       ),
     );
