@@ -37,9 +37,14 @@ class NavButton extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(8),
+          child: ElevatedButton(
+            onPressed: onTap,
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              padding: EdgeInsets.zero,
+            ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

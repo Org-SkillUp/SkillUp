@@ -1,3 +1,4 @@
+import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:SkillUp/core/theme/nav_button_theme.dart';
 import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,13 @@ class AppTheme {
         outlinedGreenHighlighColor: Color(0xFF80CF99),
         outlinedRedHighlighColor: Color(0xFFCF8080),
       ),
+      CardItemTheme(
+        defaultSideColor: Color(0xFF55B3D5),
+        alternativeSideColor: Color(0xFF59E66D),
+        bodyColor: Color.fromARGB(153, 255, 255, 255),
+        labelColor: Colors.white,
+        backgroundColor: Color(0xFF344256)
+      )
     ],
   );
 }

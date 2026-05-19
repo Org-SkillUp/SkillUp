@@ -1,3 +1,4 @@
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -52,7 +53,9 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
 
             child: IconButton(
-              onPressed: () {}, 
+              onPressed: () {
+                Navigator.pushNamed(context, AuthRoutes.login);
+              }, 
               icon: SvgPicture.asset(
                 "assets/icons/logout_icon.svg",
                 width: 20,

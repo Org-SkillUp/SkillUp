@@ -1,4 +1,3 @@
-// core/widgets/select_options.dart
 import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';

@@ -1,10 +1,12 @@
 import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
+import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
 import 'package:SkillUp/core/widgets/indicator.dart';
 import 'package:SkillUp/core/widgets/quantity_indicator.dart';
 import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
+import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
 const options = [
@@ -17,6 +19,41 @@ const cardsInfo = [
   "14/03/2026",
   "Ativa"
 ];
+
+void toggleSelected(ListItem item) {
+  item.isSelected = !item.isSelected;
+}
+
+var taskList = [
+  ClassifiedList(
+    classifier: "Prova Gestão de Vendas",
+    items: [
+      ListItem(
+        title: "Estudar Canais de Vendas",
+        subtitle: "Prova gestão de vendas",
+        onTap: toggleSelected,
+        isSelected: true,
+        date: "14/03/2026",
+      ),
+    ],
+  ),
+  ClassifiedList(
+    classifier: "Prova Administração de Empresas",
+    items: [
+      ListItem(
+        title: "Estudar Fluxo de Caixa",
+        subtitle: "Prova administração financeira",
+        onTap: toggleSelected,
+        isSelected: false,
+        date: "20/04/2026",
+      ),
+    ],
+  ),
+];
+
+void addTarefa() {
+  print("Tarefa adicionada");
+}
 
 class TrilhasPage extends StatelessWidget {
   const TrilhasPage({super.key});
@@ -111,10 +148,12 @@ class TrilhasPage extends StatelessWidget {
               ],
             ),
 
-            Column(
-              children: [
-                // Lista de tarefas
-              ],
+            SizedBox(height: 20),
+
+            CardListWrapper(
+              title: "TAREFAS", 
+              items: taskList, 
+              onAdd: () => print("Add"),
             )
           ],
         ),

@@ -21,29 +21,14 @@ class StateButtonTheme extends ThemeExtension<StateButtonTheme> {
   final Color outlinedRedHighlighColor;
 
   @override
-  StateButtonTheme copyWith({
-    Color? plainBackgroundColor,
-    Color? plainLabelColor,
-    Color? plainBorderColor,
-    Color? outlinedBackgroundColor,
-    Color? outlinedYellowHighlighColor,
-    Color? outlinedGreenHighlighColor,
-    Color? outlinedRedHighlighColor,
-  }) {
-    return StateButtonTheme(
-      plainBackgroundColor: plainBackgroundColor ?? this.plainBackgroundColor,
-      plainLabelColor: plainLabelColor ?? this.plainLabelColor,
-      plainBorderColor: plainBorderColor ?? this.plainBorderColor,
-      outlinedBackgroundColor: outlinedBackgroundColor ?? this.outlinedBackgroundColor,
-      outlinedYellowHighlighColor: outlinedYellowHighlighColor ?? this.outlinedYellowHighlighColor,
-      outlinedGreenHighlighColor: outlinedGreenHighlighColor ?? this.outlinedGreenHighlighColor,
-      outlinedRedHighlighColor: outlinedRedHighlighColor ?? this.outlinedRedHighlighColor,
-    );
-  }
-
-  @override
   ThemeExtension<StateButtonTheme> lerp(covariant ThemeExtension<StateButtonTheme>? other, double t) {
     // TODO: implement lerp
+    throw UnimplementedError();
+  }
+  
+  @override
+  ThemeExtension<StateButtonTheme> copyWith() {
+    // TODO: implement copyWith
     throw UnimplementedError();
   }
 }
