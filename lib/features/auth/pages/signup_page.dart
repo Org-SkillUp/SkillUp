@@ -7,20 +7,16 @@ class SignupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const backgroundColor = Color(0xFF16212D);
     const fieldColor = Color(0xFF243652);
     const primaryColor = Color(0xFF6FAEB3);
     const textColor = Colors.white;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1E1E1E),
       body: SafeArea(
         child: Center(
           child: Container(
-            width: 360,
             margin: const EdgeInsets.symmetric(vertical: 24),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            color: backgroundColor,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
