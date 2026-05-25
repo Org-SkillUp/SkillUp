@@ -1,4 +1,5 @@
 import 'package:SkillUp/core/theme/app_theme.dart';
+import 'package:SkillUp/features/conta/views/conta_page.dart';
 import 'package:SkillUp/features/trilhas/views/trilhas_page.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/pages/login_page.dart';
@@ -20,21 +21,24 @@ class SkillUp extends StatelessWidget {
       title: 'SkillUp',
       theme: AppTheme.mainTheme,
       debugShowCheckedModeBanner: false,
-      initialRoute: AuthRoutes.login,
+      initialRoute: AuthRoutes.conta,
       onGenerateRoute: (settings) {
-        const protectedRoutes = [
-          AuthRoutes.trilhas,
-        ];
+        const protectedRoutes = [AuthRoutes.trilhas, AuthRoutes.conta];
 
         if (protectedRoutes.contains(settings.name) && !_isLoggedIn) {
-          return MaterialPageRoute(builder: (_) => const LoginPage(), settings: settings);
+          return MaterialPageRoute(
+            builder: (_) => const LoginPage(),
+            settings: settings,
+          );
         }
 
         final routes = {
           AuthRoutes.login: (_) => const LoginPage(),
           AuthRoutes.signup: (_) => const SignupPage(),
-          AuthRoutes.forgotPassword: (_) => const ForgotPasswordPlaceholderPage(),
+          AuthRoutes.forgotPassword: (_) =>
+              const ForgotPasswordPlaceholderPage(),
           AuthRoutes.trilhas: (_) => const TrilhasPage(),
+          AuthRoutes.conta: (_) => const ContaPage(),
         };
 
         final builder = routes[settings.name];
@@ -42,7 +46,10 @@ class SkillUp extends StatelessWidget {
           return MaterialPageRoute(builder: builder, settings: settings);
         }
 
-        return MaterialPageRoute(builder: (_) => const LoginPage(), settings: settings);
+        return MaterialPageRoute(
+          builder: (_) => const LoginPage(),
+          settings: settings,
+        );
       },
     );
   }
