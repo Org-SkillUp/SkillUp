@@ -9,7 +9,7 @@ class WarningBanner extends StatelessWidget {
       padding: const EdgeInsets.all(16),
 
       decoration: BoxDecoration(
-        color: const Color(0xFF7A6230),
+        color: const Color(0xFF6E5A30),
         borderRadius: BorderRadius.circular(14),
       ),
 
@@ -18,7 +18,7 @@ class WarningBanner extends StatelessWidget {
 
           Icon(
             Icons.access_time,
-            color: Colors.amber,
+            color: Color(0xFFE8B443),
           ),
 
           SizedBox(width: 12),
@@ -27,7 +27,6 @@ class WarningBanner extends StatelessWidget {
             "1 tarefa vence hoje",
             style: TextStyle(
               color: Colors.white,
-               fontSize: 18,
             ),
           ),
         ],

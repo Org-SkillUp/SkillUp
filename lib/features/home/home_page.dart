@@ -55,8 +55,6 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-              
-              
               // Card de Progressão
               const ProgressCard(),
 
@@ -67,7 +65,7 @@ class HomePage extends StatelessWidget {
                 "Avisos",
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 20,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
