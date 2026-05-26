@@ -39,6 +39,7 @@ class CardItem extends StatelessWidget {
                   item.title,
                   style: textTheme.bodyMedium?.copyWith(
                     fontSize: 14,
+                    fontFamily: 'Arimo',
                     fontWeight: FontWeight.bold,
                     color: item.isSelected
                         ? cardItemTheme.labelColor.withAlpha((255/2).round())
@@ -52,7 +53,8 @@ class CardItem extends StatelessWidget {
                   'Meta: ${item.subtitle}',
                   style: textTheme.labelSmall?.copyWith(
                     color: cardItemTheme.labelColor.withAlpha((255/2).round()),
-                    fontSize: 12
+                    fontSize: 12,
+                    fontFamily: 'Arimo',
                   ),
                 ),
                 if (item.date != null) ...[
@@ -67,6 +69,7 @@ class CardItem extends StatelessWidget {
                         'Prazo: ${item.date}',
                         style: textTheme.labelSmall?.copyWith(
                           color: cardItemTheme.labelColor.withAlpha((255/2).round()),
+                          fontFamily: 'Arimo',
                         ),
                       ),
                     ],

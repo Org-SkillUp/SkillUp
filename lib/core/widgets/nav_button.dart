@@ -61,6 +61,7 @@ class NavButton extends StatelessWidget {
                     color: textColor,
                     fontSize: 12,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontFamily: 'Arimo',
                   ),
                 ),
               ],
