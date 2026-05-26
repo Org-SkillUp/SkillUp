@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+String testeVar = "Conteudo teste";
+
 class QuantityIndicator extends StatelessWidget {
   const QuantityIndicator({
     super.key,
@@ -22,15 +24,6 @@ class QuantityIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         color: baseColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        value,
-        textAlign: TextAlign.center,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 14
-        ),
       ),
     );
   }
