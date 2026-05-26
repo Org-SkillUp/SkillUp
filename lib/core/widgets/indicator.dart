@@ -14,6 +14,7 @@ class Indicator extends StatelessWidget {
     this.valueColor,
     this.dotColor,
     this.height,
+    this.width,
     this.padding = const EdgeInsets.all(16),
     this.borderRadius = 14,
     this.labelFontSize = 14,
@@ -30,6 +31,7 @@ class Indicator extends StatelessWidget {
   final Color? valueColor;
   final Color? dotColor;
   final double? height;
+  final double? width;
   final EdgeInsetsGeometry padding;
   final double borderRadius;
   final double labelFontSize;
@@ -43,6 +45,7 @@ class Indicator extends StatelessWidget {
 
     return Container(
       height: height,
+      width: width,
       padding: padding,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainer,
@@ -83,15 +86,6 @@ class Indicator extends StatelessWidget {
                   fontSize: valueFontSize,
                 ),
               ],
-            ),
-
-            Text(
-              label,
-              style: textTheme.labelSmall?.copyWith(
-                color: muted,
-                fontFamily: 'Arimo',
-                fontSize: 14,
-              ),
             ),
           ] else
             _IndicatorValue(

@@ -10,13 +10,13 @@ class NavButton extends StatelessWidget {
     required this.iconPath,
     required this.label,
     required this.isSelected,
-    required this.onTap,
+    required this.onPressed,
   });
 
   final String iconPath;
   final String label;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -31,19 +31,19 @@ class NavButton extends StatelessWidget {
       height: 60,
       child: Container(
         decoration: BoxDecoration(
-          color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Material(
-          color: Colors.transparent,
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(8),
           child: ElevatedButton(
-            onPressed: onTap,
+            onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: EdgeInsets.zero,
+              backgroundColor: backgroundColor
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

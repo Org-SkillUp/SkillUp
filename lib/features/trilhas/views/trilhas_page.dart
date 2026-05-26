@@ -6,6 +6,7 @@ import 'package:SkillUp/core/widgets/quantity_indicator.dart';
 import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -161,8 +162,7 @@ class TrilhasPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BotAppBar(
-        selectedIndex: 1,
-        onTabChanged: (_) {},
+        selectedPage: AuthRoutes.trilhas,
       ),
     );
   }

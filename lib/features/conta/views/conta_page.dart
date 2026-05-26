@@ -31,12 +31,6 @@ void _ignoreTap(ListItem item) {}
 class ContaPage extends StatelessWidget {
   const ContaPage({super.key});
 
-  void _handleTabChanged(BuildContext context, int index) {
-    if (index == 1) {
-      Navigator.pushReplacementNamed(context, AuthRoutes.trilhas);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -151,7 +145,8 @@ class ContaPage extends StatelessWidget {
                     iconInValueRow: true,
                     label: 'Trilhas Ativas',
                     value: '5',
-                    height: 88,
+                    height: 96,
+                    width: 112,
                     padding: EdgeInsets.all(14),
                     borderRadius: 12,
                     labelFontSize: 12,
@@ -167,7 +162,8 @@ class ContaPage extends StatelessWidget {
                     iconInValueRow: true,
                     label: 'Metas Criadas',
                     value: '5',
-                    height: 88,
+                    height: 96,
+                    width: 112,
                     padding: EdgeInsets.all(14),
                     borderRadius: 12,
                     labelFontSize: 12,
@@ -183,7 +179,8 @@ class ContaPage extends StatelessWidget {
                     iconInValueRow: true,
                     label: 'Habilidades',
                     value: '5',
-                    height: 88,
+                    height: 96,
+                    width: 112,
                     padding: EdgeInsets.all(14),
                     borderRadius: 12,
                     labelFontSize: 12,
@@ -254,8 +251,7 @@ class ContaPage extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BotAppBar(
-        selectedIndex: 2,
-        onTabChanged: (index) => _handleTabChanged(context, index),
+        selectedPage: AuthRoutes.conta,
       ),
     );
   }

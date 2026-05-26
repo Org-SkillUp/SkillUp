@@ -35,8 +35,7 @@ class SkillUp extends StatelessWidget {
         final routes = {
           AuthRoutes.login: (_) => const LoginPage(),
           AuthRoutes.signup: (_) => const SignupPage(),
-          AuthRoutes.forgotPassword: (_) =>
-              const ForgotPasswordPlaceholderPage(),
+          AuthRoutes.forgotPassword: (_) => const ForgotPasswordPlaceholderPage(),
           AuthRoutes.trilhas: (_) => const TrilhasPage(),
           AuthRoutes.conta: (_) => const ContaPage(),
         };

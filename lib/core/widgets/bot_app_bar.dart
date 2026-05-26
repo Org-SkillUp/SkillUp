@@ -1,15 +1,14 @@
 import 'package:SkillUp/core/widgets/nav_button.dart';
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:flutter/material.dart';
 
 class BotAppBar extends StatelessWidget {
   const BotAppBar({
     super.key,
-    required this.selectedIndex,
-    required this.onTabChanged,
+    required this.selectedPage,
   });
 
-  final int selectedIndex;
-  final ValueChanged<int> onTabChanged;
+  final String selectedPage;
 
   @override
   Widget build(BuildContext context) {
@@ -34,20 +33,20 @@ class BotAppBar extends StatelessWidget {
           NavButton(
             iconPath: "assets/icons/home_icon.svg",
             label: "Início",
-            isSelected: selectedIndex == 0,
-            onTap: () => onTabChanged(0),
+            isSelected: selectedPage == AuthRoutes.home,
+            onPressed: () => Navigator.pushReplacementNamed(context, AuthRoutes.home),
           ),
           NavButton(
             iconPath: "assets/icons/goal_icon.svg",
             label: "Trilha",
-            isSelected: selectedIndex == 1,
-            onTap: () => onTabChanged(1),
+            isSelected: selectedPage == AuthRoutes.trilhas,
+            onPressed: () => Navigator.pushReplacementNamed(context, AuthRoutes.trilhas),
           ),
           NavButton(
             iconPath: "assets/icons/profile_icon.svg",
             label: "Conta",
-            isSelected: selectedIndex == 2,
-            onTap: () => onTabChanged(2),
+            isSelected: selectedPage == AuthRoutes.conta,
+            onPressed: () => Navigator.pushReplacementNamed(context, AuthRoutes.conta),
           ),
         ],
       ),
