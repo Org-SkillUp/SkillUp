@@ -157,6 +157,7 @@ class TrilhasPage extends StatelessWidget {
               title: "TAREFAS", 
               items: taskList, 
               onAdd: () => print("Add"),
+              
             )
           ],
         ),

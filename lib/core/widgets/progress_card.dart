@@ -9,7 +9,7 @@ class ProgressCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
 
       decoration: BoxDecoration(
-        color: const Color(0xFF3B6E4E),
+        color: const Color(0xFF345645),
         borderRadius: BorderRadius.circular(20),
       ),
 
@@ -27,20 +27,22 @@ class ProgressCard extends StatelessWidget {
                 "Progresso Geral",
                 style: TextStyle(
                   color: Colors.white70,
-                   fontSize: 20,
+                   fontSize: 14,
                 ),
               ),
 
               Container(
                 padding: const EdgeInsets.all(8),
-
+                height: 52,
+                width: 52,
                 decoration: BoxDecoration(
-                  color: Colors.white24,
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
 
                 child: const Icon(
                   Icons.trending_up,
+                  size: 28,
                   color: Colors.white,
                 ),
               ),
@@ -53,7 +55,7 @@ class ProgressCard extends StatelessWidget {
             "60%",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 38,
+              fontSize: 32,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -76,7 +78,7 @@ class ProgressCard extends StatelessWidget {
             "3 de 5 trilhas concluídas",
             style: TextStyle(
               color: Colors.white70,
-               fontSize: 18,
+               fontSize: 12,
             ),
           ),
         ],
