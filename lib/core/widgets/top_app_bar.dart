@@ -8,6 +8,8 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
+      toolbarHeight: 64,
+
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(8),
@@ -32,12 +34,15 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
       ),
 
+      leadingWidth: 144,
+
       leading: Padding(
         padding: EdgeInsets.only(left: 16),
         child: Image.asset(
           "assets/images/logo.png", 
           width: 128,
-          height: 32,  
+          height: 32,
+          fit: BoxFit.contain,
         ),
       ),
 
@@ -53,6 +58,8 @@ class TopAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
 
             child: IconButton(
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
               onPressed: () {
                 Navigator.pushNamed(context, AuthRoutes.login);
               }, 

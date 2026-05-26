@@ -56,6 +56,8 @@ class HomePage extends StatelessWidget {
 
             children: [
 
+              
+              
               // Card de Progressão
               const ProgressCard(),
 
