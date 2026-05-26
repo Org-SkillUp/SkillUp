@@ -52,7 +52,8 @@ class Indicator extends StatelessWidget {
               Text(
                 label,
                 style: textTheme.labelSmall?.copyWith(
-                  color: muted, 
+                  color: muted,
+                  fontFamily: 'Arimo',
                   fontSize: 14
                 ),
               ),
@@ -66,6 +67,7 @@ class Indicator extends StatelessWidget {
               color: valueColor ?? colorScheme.primary,
               fontWeight: FontWeight.bold,
               fontSize: 14,
+              fontFamily: 'Arimo',
             ),
           ),
         ],

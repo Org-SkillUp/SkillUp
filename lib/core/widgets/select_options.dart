@@ -60,7 +60,12 @@ class SelectOptions extends StatelessWidget {
             ...options.map(
               (option) => DropdownMenuItem(
                 value: option,
-                child: Text(option),
+                child: Text(
+                  option,
+                  style: TextStyle(
+                    fontFamily: 'Arimo'
+                  ),
+                ),
               ),
             ),
             if (allowCreation)

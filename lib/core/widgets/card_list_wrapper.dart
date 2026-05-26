@@ -29,6 +29,7 @@ class CardListWrapper extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                fontFamily: 'Arimo',
               ),
             ),
             if (onAdd != null)
@@ -74,6 +75,7 @@ class CardListWrapper extends StatelessWidget {
                     classifier.toUpperCase(),
                     style: TextStyle(
                       fontSize: 14,
+                      fontFamily: 'Arimo',
                       fontWeight: FontWeight.bold,
                       color: colorScheme.primary.withAlpha((255 * 0.8).round()),
                       letterSpacing: 0.35,

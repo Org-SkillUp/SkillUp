@@ -123,6 +123,7 @@ class TrilhasPage extends StatelessWidget {
                     style: TextStyle(
                       color: stButton.outlinedYellowHighlighColor,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Arimo',
                       fontSize: 16,
                     ),
                   ),
@@ -138,6 +139,7 @@ class TrilhasPage extends StatelessWidget {
                     style: TextStyle(
                       color: stButton.plainLabelColor,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Arimo',
                       fontSize: 16,
                     ),
                   ),

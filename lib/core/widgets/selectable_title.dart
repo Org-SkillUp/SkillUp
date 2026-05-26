@@ -34,6 +34,7 @@ class SelectableTitle extends StatelessWidget {
           label,
           style: textTheme.labelMedium?.copyWith(
             color: colorScheme.primary.withAlpha(153),
+            fontFamily: 'Arimo',
           ),
         ),
         const SizedBox(height: 8),
@@ -52,6 +53,7 @@ class SelectableTitle extends StatelessWidget {
             underLabel!,
             style: textTheme.labelSmall?.copyWith(
               color: colorScheme.primary.withAlpha(153),
+              fontFamily: 'Arimo',
             ),
           ),
         ],
