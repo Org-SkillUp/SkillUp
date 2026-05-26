@@ -94,7 +94,7 @@ class LoginPage extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AuthRoutes.trilhas);
+                    Navigator.pushReplacementNamed(context, AuthRoutes.home);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
