@@ -4,6 +4,7 @@ import 'package:SkillUp/features/trilhas/views/trilhas_page.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/signup_page.dart';
+import 'features/home/home_page.dart';
 import 'features/auth/routes/auth_routes.dart';
 
 void main() {
@@ -38,6 +39,9 @@ class SkillUp extends StatelessWidget {
           AuthRoutes.forgotPassword: (_) => const ForgotPasswordPlaceholderPage(),
           AuthRoutes.trilhas: (_) => const TrilhasPage(),
           AuthRoutes.conta: (_) => const ContaPage(),
+          '/home': (_) => const HomePage(
+            userName: "Guylherme"
+          ),
         };
 
         final builder = routes[settings.name];
