@@ -17,8 +17,6 @@ class NavButtonTheme extends ThemeExtension<NavButtonTheme> {
   final Color inactiveIconColor;
   final Color inactiveTextColor;
 
-
-  
   @override
   ThemeExtension<NavButtonTheme> lerp(covariant ThemeExtension<NavButtonTheme>? other, double t) {
     // TODO: implement lerp

@@ -6,6 +6,8 @@ import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/signup_page.dart';
 import 'features/home/home_page.dart';
 import 'features/auth/routes/auth_routes.dart';
+import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/views/tarefa_detail_page.dart';
 
 void main() {
   runApp(const SkillUp());
@@ -42,6 +44,7 @@ class SkillUp extends StatelessWidget {
           '/home': (_) => const HomePage(
             userName: "Guylherme"
           ),
+          AuthRoutes.tarefas: (_) => const TarefaDetailPage(tarefa: TarefaDetail.mock),
         };
 
         final builder = routes[settings.name];

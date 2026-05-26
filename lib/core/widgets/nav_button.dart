@@ -33,17 +33,15 @@ class NavButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Material(
-          color: backgroundColor,
-          borderRadius: BorderRadius.circular(8),
-          child: ElevatedButton(
+        child: TextButton(
             onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
+            style: TextButton.styleFrom(
+              backgroundColor: backgroundColor,
+              foregroundColor: textColor,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
               padding: EdgeInsets.zero,
-              backgroundColor: backgroundColor
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -52,7 +50,10 @@ class NavButton extends StatelessWidget {
                   iconPath,
                   width: 24,
                   height: 24,
-                  colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+                  colorFilter: ColorFilter.mode(
+                    iconColor,
+                    BlendMode.srcIn,
+                  ),
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -60,14 +61,13 @@ class NavButton extends StatelessWidget {
                   style: TextStyle(
                     color: textColor,
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    fontFamily: 'Arimo',
+                    fontWeight:
+                        isSelected ? FontWeight.w600 : FontWeight.w400,
                   ),
                 ),
               ],
             ),
           ),
-        ),
       ),
     );
   }

@@ -77,27 +77,15 @@ class HomePage extends StatelessWidget {
 
               const SizedBox(height: 24),
 
-              // Título
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-                children: [
-
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text("Ver todas"), //TODO: Passar de ver todos para o compenente card listWrapper.
-                  ),
-                ],
-              ),
-
               const SizedBox(height: 16),
 
               Expanded(
                 child: ListView(
                   children: [
-
                     CardListWrapper(
                       title: "Tarefas Próximas",
+                      subtitle: "Tarefas com prazo nos próximos dias",
+                      onExpand: () => {},
                       items: homeTasks,
                     ),
                   ],

@@ -8,11 +8,15 @@ class CardListWrapper extends StatelessWidget {
     required this.title,
     required this.items,
     this.onAdd,
+    this.onExpand,
+    this.subtitle,
   });
 
   final String title;
+  final String? subtitle;
   final List<ClassifiedList> items;
   final VoidCallback? onAdd;
+  final VoidCallback? onExpand;
 
   @override
   Widget build(BuildContext context) {
@@ -24,13 +28,31 @@ class CardListWrapper extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Arimo',
-              ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Arimo',
+                  ),
+                ),
+
+                SizedBox(height: 4),
+
+                if (subtitle != null)
+                  Text(
+                    subtitle!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontFamily: 'Arimo',
+                      color: Colors.white.withAlpha(153)
+                    ),
+                  ),
+              ],
             ),
             if (onAdd != null)
               IconButton(
@@ -47,6 +69,19 @@ class CardListWrapper extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   padding: const EdgeInsets.all(4),
+                ),
+              ),
+
+            if (onExpand != null)
+              TextButton(
+                onPressed: () {}, //TODO: Implementar lista de tarefas expandida
+                child: const Text(
+                  "Ver todas",
+                  style: TextStyle(
+                    fontFamily: 'Arimo',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14
+                  ),
                 ),
               ),
           ],

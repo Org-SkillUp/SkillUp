@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 class AppTheme {
   static ThemeData mainTheme = ThemeData(
     useMaterial3: true,
+    fontFamily: 'Arimo',
 
     colorScheme: ColorScheme.dark(
       surface: const Color.fromARGB(255, 38, 54, 76),

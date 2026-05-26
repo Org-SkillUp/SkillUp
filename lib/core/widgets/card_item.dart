@@ -1,4 +1,5 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -66,16 +67,30 @@ class CardItem extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.title,
-                  style: textTheme.bodyMedium?.copyWith(
-                    fontSize: 14,
-                    fontFamily: 'Arimo',
-                    fontWeight: FontWeight.bold,
-                    color: isDimmed ? muted : cardItemTheme.labelColor,
-                    decoration: isDimmed ? TextDecoration.lineThrough : null,
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton(
+                    onPressed: () => Navigator.pushReplacementNamed(
+                      context,
+                      AuthRoutes.tarefas,
+                    ),
+                    style: TextButton.styleFrom(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Text(
+                      item.title,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: isDimmed ? muted : cardItemTheme.labelColor,
+                        decoration:
+                            isDimmed ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
                   ),
                 ),
+                
                 const SizedBox(height: 8),
                 Text(
                   'Meta: ${item.subtitle}',
