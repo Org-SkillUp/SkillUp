@@ -21,7 +21,7 @@ class SkillUp extends StatelessWidget {
       title: 'SkillUp',
       theme: AppTheme.mainTheme,
       debugShowCheckedModeBanner: false,
-      initialRoute: AuthRoutes.conta,
+      initialRoute: AuthRoutes.login,
       onGenerateRoute: (settings) {
         const protectedRoutes = [AuthRoutes.trilhas, AuthRoutes.conta];
 

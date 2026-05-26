@@ -25,6 +25,15 @@ class QuantityIndicator extends StatelessWidget {
         color: baseColor.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
+      child: Text(
+        value,
+        textAlign: TextAlign.center,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 14
+        ),
+      ),
     );
   }
 }
