@@ -27,12 +27,22 @@ class StateButton extends StatelessWidget {
     final style = ElevatedButton.styleFrom(
       backgroundColor: bgColor,
       foregroundColor: txtColor,
+      disabledBackgroundColor: bgColor.withAlpha((255 * 0.4).round()),
+      disabledForegroundColor: txtColor.withAlpha((255 * 0.5).round()),
       elevation: 0,
       minimumSize: const Size(double.infinity, 52),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius),
         side: BorderSide(color: borderColor, width: borderWidth),
       ),
+    ).copyWith(
+      overlayColor: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.disabled)) return Colors.transparent;
+        if (states.contains(WidgetState.pressed)) {
+          return txtColor.withAlpha((255 * 0.12).round());
+        }
+        return null;
+      }),
     );
 
     if (icon != null) {

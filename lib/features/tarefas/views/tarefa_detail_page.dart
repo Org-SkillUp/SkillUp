@@ -8,14 +8,51 @@ import 'package:SkillUp/features/tarefas/widgets/tarefa_description_card.dart';
 import 'package:SkillUp/features/tarefas/widgets/tarefa_info_card.dart';
 import 'package:flutter/material.dart';
 
-class TarefaDetailPage extends StatelessWidget {
+class TarefaDetailPage extends StatefulWidget {
   const TarefaDetailPage({super.key, required this.tarefa});
 
   final TarefaDetail tarefa;
 
   @override
+  State<TarefaDetailPage> createState() => _TarefaDetailPageState();
+}
+
+class _TarefaDetailPageState extends State<TarefaDetailPage> {
+  bool _isSaved = false;
+
+  void _handleSave() {
+    if (_isSaved) return;
+
+    setState(() => _isSaved = true);
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: const Text('Alterações salvas com sucesso.'),
+            backgroundColor: const Color(0xFF5A969A),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final stButton = Theme.of(context).extension<StateButtonTheme>()!;
+    final saveBgColor = _isSaved
+        ? stButton.plainBackgroundColor.withAlpha((255 * 0.4).round())
+        : stButton.plainBackgroundColor;
+    final saveLabelColor = _isSaved
+        ? stButton.plainLabelColor.withAlpha((255 * 0.5).round())
+        : stButton.plainLabelColor;
 
     return Scaffold(
       appBar: const TopAppBar(),
@@ -38,7 +75,7 @@ class TarefaDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              tarefa.titulo,
+              widget.tarefa.titulo,
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -47,14 +84,14 @@ class TarefaDetailPage extends StatelessWidget {
             ),
             const SizedBox(height: 6),
             Text(
-              tarefa.trilhaNome,
+              widget.tarefa.trilhaNome,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withAlpha((255 * 0.6).round()),
               ),
             ),
             const SizedBox(height: 20),
-            TarefaInfoCard(tarefa: tarefa),
+            TarefaInfoCard(tarefa: widget.tarefa),
             const SizedBox(height: 20),
             const Text(
               'Descrição',
@@ -65,19 +102,19 @@ class TarefaDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            TarefaDescriptionCard(descricao: tarefa.descricao),
+            TarefaDescriptionCard(descricao: widget.tarefa.descricao),
             const SizedBox(height: 24),
             StateButton(
-              onPressed: () {},
+              onPressed: _isSaved ? null : _handleSave,
               label: Text(
                 'SALVAR',
                 style: TextStyle(
-                  color: stButton.plainLabelColor,
+                  color: saveLabelColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
-              bgColor: stButton.plainBackgroundColor,
+              bgColor: saveBgColor,
               borderRadius: 14,
             ),
             const SizedBox(height: 16),
