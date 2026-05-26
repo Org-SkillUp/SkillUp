@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:SkillUp/core/widgets/progress_card.dart';
 import 'package:SkillUp/core/widgets/warning_card.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
+import 'package:SkillUp/core/widgets/header_card.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 
 void toggleSelected(ListItem item) {
@@ -56,7 +57,12 @@ class HomePage extends StatelessWidget {
 
             children: [
 
-              
+              // Header
+              HomeHeader(
+                userName: userName,
+              ),
+
+              const SizedBox(height: 24),
               
               // Card de Progressão
               const ProgressCard(),
