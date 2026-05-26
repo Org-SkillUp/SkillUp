@@ -53,7 +53,7 @@ class ProgressCard extends StatelessWidget {
             "60%",
             style: TextStyle(
               color: Colors.white,
-              fontSize: 38,
+              fontSize: 52,
               fontWeight: FontWeight.bold,
             ),
           ),

@@ -55,7 +55,6 @@ class HomePage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
 
             children: [
-
               
               
               // Card de Progressão
