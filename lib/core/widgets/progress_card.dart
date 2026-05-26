@@ -23,12 +23,25 @@ class ProgressCard extends StatelessWidget {
 
             children: [
 
-              const Text(
-                "Progresso Geral",
-                style: TextStyle(
-                  color: Colors.white70,
-                   fontSize: 14,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Progresso Geral",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Text(
+                    "60%",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
 
               Container(
@@ -51,23 +64,13 @@ class ProgressCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          const Text(
-            "60%",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
           ClipRRect(
             borderRadius: BorderRadius.circular(10),
 
             child: const LinearProgressIndicator(
               value: 0.6,
               minHeight: 8,
+              color: Color(0xFF4BA759),
               backgroundColor: Colors.black26,
             ),
           ),
