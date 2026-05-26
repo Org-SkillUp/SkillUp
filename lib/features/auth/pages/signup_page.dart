@@ -12,126 +12,149 @@ class SignupPage extends StatelessWidget {
     const textColor = Colors.white;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 24),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IconButton(
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, AuthRoutes.login);
+                },
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+              ),
+
+              const SizedBox(height: 24),
+
+              const Center(
+                child: Text(
+                  'SKILLUP',
+                  style: TextStyle(
+                    fontSize: 38,
+                    fontWeight: FontWeight.w300,
+                    color: textColor,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              const Center(
+                child: Text(
+                  'Criar Conta',
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 32),
+
+              const Text(
+                'NOME COMPLETO',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFieldBuilder.buildTextField(
+                hint: 'Nome completo',
+                fillColor: fieldColor,
+              ),
+
+              const SizedBox(height: 14),
+
+              const Text(
+                'EMAIL',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFieldBuilder.buildTextField(
+                hint: 'Email',
+                fillColor: fieldColor,
+              ),
+
+              const SizedBox(height: 14),
+
+              const Text(
+                'SENHA',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFieldBuilder.buildTextField(
+                hint: 'Senha',
+                fillColor: fieldColor,
+                obscureText: true,
+              ),
+
+              const SizedBox(height: 28),
+
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'CRIAR',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Center(
+                child: TextButton(
                   onPressed: () {
                     Navigator.pushReplacementNamed(context, AuthRoutes.login);
                   },
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
-                ),
-                const SizedBox(height: 24),
-                const Center(
-                  child: Text(
-                    'SKILLUP',
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w300,
-                      color: textColor,
-                      letterSpacing: 1.5,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 28),
-                const Center(
-                  child: Text(
-                    'Criar Conta',
+                  child: const Text(
+                    'Log in',
                     style: TextStyle(
                       color: textColor,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
-                const SizedBox(height: 32),
-                const Text(
-                  'NOME COMPLETO',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFieldBuilder.buildTextField(
-                  hint: 'Nome completo',
-                  fillColor: fieldColor,
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'EMAIL',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFieldBuilder.buildTextField(
-                  hint: 'Email',
-                  fillColor: fieldColor,
-                ),
-                const SizedBox(height: 14),
-                const Text(
-                  'SENHA',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFieldBuilder.buildTextField(
-                  hint: 'Senha',
-                  fillColor: fieldColor,
-                  obscureText: true,
-                ),
-                const SizedBox(height: 28),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'CRIAR',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, AuthRoutes.login);
-                    },
-                    child: const Text(
-                      'Log in',
-                      style: TextStyle(
-                        color: textColor,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-                const Spacer(),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 24),
+            ],
           ),
         ),
       ),

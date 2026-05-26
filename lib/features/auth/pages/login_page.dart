@@ -14,124 +14,120 @@ class LoginPage extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(vertical: 24),
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Spacer(),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 32,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 48),
 
-                Center(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 240,
-                    height: 90,
-                    fit: BoxFit.contain,
+              Center(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 240,
+                  height: 90,
+                  fit: BoxFit.contain,
+                ),
+              ),
+
+              const SizedBox(height: 48),
+
+              const Text(
+                'LOGIN',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFieldBuilder.buildTextField(
+                hint: 'Email ou Usuário',
+                fillColor: fieldColor,
+              ),
+
+              const SizedBox(height: 14),
+
+              const Text(
+                'SENHA',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              TextFieldBuilder.buildTextField(
+                hint: 'Senha',
+                fillColor: fieldColor,
+                obscureText: true,
+              ),
+
+              const SizedBox(height: 10),
+
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, AuthRoutes.forgotPassword);
+                  },
+                  child: const Text(
+                    'Esqueceu a senha?',
+                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 48),
+              const SizedBox(height: 24),
 
-                const Text(
-                  'LOGIN',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: primaryColor,
+                    foregroundColor: Colors.white,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'LOGIN',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 8),
+              const SizedBox(height: 12),
 
-                TextFieldBuilder.buildTextField(
-                  hint: 'Email ou Usuário',
-                  fillColor: fieldColor,
-                ),
-
-                const SizedBox(height: 14),
-
-                const Text(
-                  'SENHA',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                TextFieldBuilder.buildTextField(
-                  hint: 'Senha',
-                  fillColor: fieldColor,
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AuthRoutes.forgotPassword);
-                    },
-                    child: const Text(
-                      'Esqueceu a senha?',
-                      style: TextStyle(
-                        color: secondaryTextColor,
-                        fontSize: 13,
-                      ),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, AuthRoutes.signup);
+                  },
+                  child: const Text(
+                    'Criar Conta',
+                    style: TextStyle(
+                      color: textColor,
+                      decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 24),
-
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {},
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    child: const Text(
-                      'LOGIN',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                Center(
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, AuthRoutes.signup);
-                    },
-                    child: const Text(
-                      'Criar Conta',
-                      style: TextStyle(
-                        color: textColor,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-
-                const Spacer(flex: 2),
-              ],
-            ),
+              const SizedBox(height: 32),
+            ],
           ),
         ),
       ),
