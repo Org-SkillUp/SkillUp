@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "376050209806",
+    "project_id": "skillup-unit",
+    "storage_bucket": "skillup-unit.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:376050209806:android:141814c8e61b94a828d85f",
+        "android_client_info": {
+          "package_name": "com.example.proj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZVh_qtPSuHyLaoCR1z2LfQ-AnM4y1lok"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
