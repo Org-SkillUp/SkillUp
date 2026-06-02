@@ -42,11 +42,15 @@ class TarefaFormControllers {
   /// Os textos são "aparados" (trim) para evitar espaços acidentais nas
   /// pontas das informações digitadas pelo usuário.
   ///
-  /// O [id] padrão é vazio (tarefa nova): nesse caso o repositório gera um id
-  /// ao salvar. Na edição, passe o id atual para preservar a identidade.
-  TarefaDetail toTarefa({String id = ''}) {
+  /// Na criação, omita [existente]. Na edição, passe a tarefa atual para
+  /// preservar id e metadados de persistência (`createdAt`, `createdBy`, etc.).
+  TarefaDetail toTarefa({TarefaDetail? existente}) {
     return TarefaDetail(
-      id: id,
+      id: existente?.id,
+      createdAt: existente?.createdAt,
+      updatedAt: existente?.updatedAt,
+      createdBy: existente?.createdBy,
+      updatedBy: existente?.updatedBy,
       titulo: titulo.text.trim(),
       trilhaNome: trilha.text.trim(),
       dataInicio: dataInicio.text.trim(),

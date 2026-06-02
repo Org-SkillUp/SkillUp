@@ -87,7 +87,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
   Future<void> _saveEdit() async {
     // Preserva o id atual para que o Firestore atualize a tarefa certa,
     // em vez de criar uma nova.
-    final atualizada = _controllers.toTarefa(id: _tarefa.id);
+    final atualizada = _controllers.toTarefa(existente: _tarefa);
 
     try {
       await TarefaRepository.instance.atualizar(atualizada);
@@ -139,7 +139,9 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
     if (confirmado != true || !mounted) return;
 
     try {
-      await TarefaRepository.instance.remover(_tarefa.id);
+      final id = _tarefa.id;
+      if (id == null || id.isEmpty) return;
+      await TarefaRepository.instance.remover(id);
 
       if (!mounted) return;
       TarefasNavigation.goToTrilhas(context);

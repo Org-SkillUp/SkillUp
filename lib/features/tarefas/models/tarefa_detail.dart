@@ -1,7 +1,13 @@
+import 'package:SkillUp/core/models/persistence_model.dart';
+
 /// Dados exibidos na tela de detalhe de uma tarefa.
-class TarefaDetail {
+class TarefaDetail extends PersistenceModel {
   const TarefaDetail({
-    required this.id,
+    super.id,
+    super.createdAt,
+    super.updatedAt,
+    super.createdBy,
+    super.updatedBy,
     required this.titulo,
     required this.trilhaNome,
     required this.dataInicio,
@@ -10,11 +16,6 @@ class TarefaDetail {
     required this.descricao,
   });
 
-  /// Identidade da tarefa. É o que permite localizar e atualizar uma tarefa
-  /// já existente no repositório. Tarefas novas recebem um id gerado na
-  /// camada de dados (ver `TarefaRepository`).
-  final String id;
-
   final String titulo;
   final String trilhaNome;
   final String dataInicio;
@@ -22,12 +23,12 @@ class TarefaDetail {
   final String metaRelacionada;
   final String descricao;
 
-  /// Cria uma cópia da tarefa alterando apenas os campos informados.
-  ///
-  /// Mantém o modelo imutável: na edição geramos uma nova instância
-  /// preservando o `id` original, em vez de mudar os campos no lugar.
   TarefaDetail copyWith({
     String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? createdBy,
+    String? updatedBy,
     String? titulo,
     String? trilhaNome,
     String? dataInicio,
@@ -37,6 +38,10 @@ class TarefaDetail {
   }) {
     return TarefaDetail(
       id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
       titulo: titulo ?? this.titulo,
       trilhaNome: trilhaNome ?? this.trilhaNome,
       dataInicio: dataInicio ?? this.dataInicio,
@@ -46,10 +51,7 @@ class TarefaDetail {
     );
   }
 
-  /// Converte a tarefa em um mapa para gravar no Firestore.
-  ///
-  /// O `id` NÃO entra no mapa de propósito: no Firestore ele é o id do
-  /// documento, então guardá-lo aqui dentro seria informação duplicada.
+  @override
   Map<String, dynamic> toMap() {
     return {
       'titulo': titulo,
@@ -61,12 +63,14 @@ class TarefaDetail {
     };
   }
 
-  /// Reconstrói uma tarefa a partir do id do documento e dos dados do
-  /// Firestore. Usa `?? ''` para tolerar documentos com campos faltando,
-  /// evitando erros de leitura.
-  factory TarefaDetail.fromMap(String id, Map<String, dynamic> map) {
+  /// Reconstrói a tarefa a partir do documento Firestore.
+  factory TarefaDetail.fromMap(Map<String, dynamic> map, String id) {
     return TarefaDetail(
       id: id,
+      createdAt: PersistenceModel.parseTimestamp(map['createdAt']),
+      updatedAt: PersistenceModel.parseTimestamp(map['updatedAt']),
+      createdBy: map['createdBy'] as String?,
+      updatedBy: map['updatedBy'] as String?,
       titulo: (map['titulo'] ?? '') as String,
       trilhaNome: (map['trilhaNome'] ?? '') as String,
       dataInicio: (map['dataInicio'] ?? '') as String,
@@ -76,7 +80,6 @@ class TarefaDetail {
     );
   }
 
-  /// Dados mock para desenvolvimento e testes da tela de detalhe.
   static const mock = TarefaDetail(
     id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
