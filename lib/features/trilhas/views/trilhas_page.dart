@@ -217,9 +217,14 @@ class _TrilhasPageState extends State<TrilhasPage> {
                     Expanded(
                       child: SelectableTitle(
                         label: 'Trilha Selecionada',
+                        selectedLabel: selected.title,
                         underLabel: _progressLabel,
-                        options: trilhas.map((t) => t.title).toList(),
-                        selected: selected.title,
+                        options: Map.fromEntries(
+                          trilhas.map(
+                            (t) => MapEntry(t.id!, t.title),
+                          )
+                        ),
+                        selected: selected.id!,
                         onChanged: _onTrilhaChanged,
                       ),
                     ),
@@ -272,6 +277,40 @@ class _TrilhasPageState extends State<TrilhasPage> {
                       borderRadius: 14,
                     ),
                     const SizedBox(height: 16),
+
+                    if (_isCreating) ...[
+                      TextFieldBuilder.buildTextField(
+                        hint: "Nome da Trilha",
+                        fillColor: const Color.fromARGB(255, 78, 73, 73),
+                        controller: _trilhaNomeController,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      StateButton(
+                        onPressed: () async {
+                          final name = _trilhaNomeController.text.trim();
+                          if (name.isEmpty) return;
+
+                          await _service.create(Trilha(
+                            title: name,
+                            subtitle: "",
+                            duedate: DateTime.now(),
+                          ));
+
+                          setState(() {
+                            _isCreating = false;
+                            _trilhaNomeController.clear();
+                          });
+                        },
+                        label: Text('CONFIRMAR'),
+                        bgColor: stButton.plainBackgroundColor,
+                        borderRadius: 16,
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+
                     StateButton(
                       onPressed: () {
                         setState(() => _isCreating = true);

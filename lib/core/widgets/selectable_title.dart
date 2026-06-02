@@ -5,6 +5,7 @@ class SelectableTitle extends StatelessWidget {
   const SelectableTitle({
     super.key,
     required this.label,
+    required this.selectedLabel,
     this.underLabel,
     required this.options,
     required this.selected,
@@ -14,8 +15,9 @@ class SelectableTitle extends StatelessWidget {
   });
 
   final String label;
+  final String selectedLabel;
   final String? underLabel;
-  final List<String> options;
+  final Map<String, String> options;
   final String selected;
   final ValueChanged<String> onChanged;
   final bool allowCreation;
@@ -42,6 +44,7 @@ class SelectableTitle extends StatelessWidget {
         SelectOptions(
           options: options,
           selected: selected,
+          selectedLabel: selectedLabel,
           onChanged: onChanged,
           allowCreation: allowCreation,
           onCreated: onCreated,
