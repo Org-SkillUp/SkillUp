@@ -30,7 +30,6 @@ class FirestoreService<T extends PersistenceModel> {
   Stream<List<T>> readList() {
     return _firestore
       .collection(collection)
-      .orderBy('createdAt', descending: true)
       .snapshots()
       .map(
         (snapshot) => snapshot.docs

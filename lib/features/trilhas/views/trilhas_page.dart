@@ -1,6 +1,8 @@
 import 'package:SkillUp/core/theme/state_button_theme.dart';
+import 'package:SkillUp/core/theme/status_theme.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
+import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:SkillUp/core/widgets/indicator.dart';
 import 'package:SkillUp/core/widgets/quantity_indicator.dart';
 import 'package:SkillUp/core/widgets/selectable_title.dart';
@@ -23,23 +25,27 @@ class TrilhasPage extends StatefulWidget {
 class _TrilhasPageState extends State<TrilhasPage> {
   final _service = TrilhasService();
 
-  final String _userEmail =
-    FirebaseAuth.instance.currentUser?.email ?? 'unknown';
+  final String _userEmail = FirebaseAuth.instance.currentUser?.email ?? 'unknown';
 
   List<Trilha> _trilhas = [];
   Trilha? _selected;
 
-  int get _totalTasks =>
-    _selected?.tarefas.fold(0, (sum, cl) => sum! + cl.items.length) ?? 0;
+  bool _isCreating = false;
+  final _trilhaNomeController = TextEditingController();
 
-  int get _finishedTasks =>
-    _selected?.tarefas.fold(
-      0,
-      (sum, cl) => sum! + cl.items.where((i) => i.isSelected).length,
-    ) ?? 0;
+  @override
+  void dispose() {
+    _trilhaNomeController.dispose();
+    super.dispose();
+  }
 
-  String get _progressLabel =>
-    '$_finishedTasks de $_totalTasks tarefas concluídas';
+  int get _totalTasks => _selected?.tarefas.fold(0, (sum, cl) => sum! + cl.items.length) ?? 0;
+
+  int get _finishedTasks => _selected?.tarefas.fold(
+    0, (sum, cl) => sum! + cl.items.where((i) => i.isSelected).length,
+  ) ?? 0;
+
+  String get _progressLabel => '$_finishedTasks de $_totalTasks tarefas concluídas';
 
   String get _progressValue => _totalTasks == 0
     ? '0%'
@@ -51,25 +57,6 @@ class _TrilhasPageState extends State<TrilhasPage> {
     return '${d.day.toString().padLeft(2, '0')}/'
       '${d.month.toString().padLeft(2, '0')}/'
       '${d.year}';
-  }
-
-  Color get _statusColor => switch (_selected?.status) {
-    TrilhaStatus.active => const Color(0xFF55B3D5),
-    TrilhaStatus.paused => const Color(0xFFE5A020),
-    TrilhaStatus.completed => const Color(0xFF4CAF50),
-    TrilhaStatus.canceled => const Color(0xFFE53935),
-    _ => const Color(0xFF55B3D5),
-  };
-
-  void _onTrilhasUpdated(List<Trilha> trilhas) {
-    final stillExists = trilhas.any((t) => t.id == _selected?.id);
-
-    setState(() {
-      _trilhas = trilhas;
-      _selected = stillExists
-        ? trilhas.firstWhere((t) => t.id == _selected!.id)
-        : trilhas.isNotEmpty ? trilhas.first : null;
-    });
   }
 
   void _onTrilhaChanged(String? newId) {
@@ -103,6 +90,19 @@ class _TrilhasPageState extends State<TrilhasPage> {
     // TODO: persistir alteração de tarefa no Firestore quando modelo estiver pronto
   }
 
+  Color getStatusColor(BuildContext context) {
+    final nav = Theme.of(context).extension<StatusTheme>()!;
+
+    return switch (_selected?.status) {
+      TrilhaStatus.active => nav.activeColor,
+      TrilhaStatus.paused => nav.pausedColor,
+      TrilhaStatus.completed => nav.completedColor,
+      TrilhaStatus.canceled => nav.canceledColor,
+      TrilhaStatus.pending => nav.pendingColor,
+      null => Colors.cyanAccent,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final stButton = Theme.of(context).extension<StateButtonTheme>()!;
@@ -110,6 +110,7 @@ class _TrilhasPageState extends State<TrilhasPage> {
     return StreamBuilder<List<Trilha>>(
       stream: _service.readListByUser(_userEmail),
       builder: (context, snapshot) {
+        final trilhas = snapshot.data ?? [];
 
         if (snapshot.hasError) {
           return Scaffold(
@@ -127,21 +128,81 @@ class _TrilhasPageState extends State<TrilhasPage> {
           );
         }
 
-        final trilhas = snapshot.data ?? [];
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) _onTrilhasUpdated(trilhas);
-        });
-
         if (trilhas.isEmpty) {
           return Scaffold(
             appBar: TopAppBar(),
-            body: const Center(child: Text('Nenhuma trilha encontrada.')),
+            body: SafeArea(
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (_isCreating) ...[
+                    TextFieldBuilder.buildTextField(
+                      hint: "Nome da Trilha",
+                      fillColor: Colors.white,
+                      controller: _trilhaNomeController,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    StateButton(
+                      onPressed: () async {
+                        final name = _trilhaNomeController.text.trim();
+                        if (name.isEmpty) return;
+
+                        await _service.create(Trilha(
+                          title: name,
+                          subtitle: "",
+                          duedate: DateTime.now(),
+                        ));
+
+                        setState(() {
+                          _isCreating = false;
+                          _trilhaNomeController.clear();
+                        });
+                      },
+                      label: Text('CONFIRMAR'),
+                      bgColor: stButton.plainBackgroundColor,
+                      borderRadius: 16,
+                    ),
+
+                    const SizedBox(height: 16),
+                  ],
+
+                  Center(
+                    child: StateButton(
+                      onPressed: () {
+                        setState(() => _isCreating = true);
+                      },
+                      label: Text(
+                        'NOVA TRILHA',
+                        style: TextStyle(
+                          color: stButton.plainLabelColor,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Arimo',
+                          fontSize: 16,
+                        ),
+                      ),
+                      bgColor: stButton.plainBackgroundColor,
+                      borderRadius: 16,
+                      icon: Icon(Icons.add, color: stButton.plainLabelColor),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
           );
         }
 
-        final selected = _selected ?? trilhas.first;
+        final selected = trilhas.any((t) => t.id == _selected?.id)
+            ? trilhas.firstWhere((t) => t.id == _selected!.id)
+            : trilhas.first;
+
+        if (_selected?.id != selected.id) {
+          _selected = selected;
+        }
+
+        print(selected.title);
         final isPaused = selected.status == TrilhaStatus.paused;
 
         return Scaffold(
@@ -157,8 +218,8 @@ class _TrilhasPageState extends State<TrilhasPage> {
                       child: SelectableTitle(
                         label: 'Trilha Selecionada',
                         underLabel: _progressLabel,
-                        options: trilhas.map((t) => t.id!).toList(),
-                        selected: selected.id!,
+                        options: trilhas.map((t) => t.title).toList(),
+                        selected: selected.title,
                         onChanged: _onTrilhaChanged,
                       ),
                     ),
@@ -184,8 +245,8 @@ class _TrilhasPageState extends State<TrilhasPage> {
                         icon: Icons.circle,
                         label: 'Status',
                         value: selected.status.label,
-                        dotColor: _statusColor,
-                        valueColor: _statusColor,
+                        dotColor: getStatusColor(context),
+                        valueColor: getStatusColor(context),
                       ),
                     ),
                   ],
@@ -213,7 +274,7 @@ class _TrilhasPageState extends State<TrilhasPage> {
                     const SizedBox(height: 16),
                     StateButton(
                       onPressed: () {
-                        // TODO: abrir nova trilha
+                        setState(() => _isCreating = true);
                       },
                       label: Text(
                         'NOVA TRILHA',

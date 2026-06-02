@@ -7,8 +7,10 @@ class TextFieldBuilder {
     required String hint,
     required Color fillColor,
     bool obscureText = false,
+    TextEditingController? controller,
   }) {
     return TextField(
+      controller: controller,
       obscureText: obscureText,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(

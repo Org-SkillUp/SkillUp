@@ -21,7 +21,6 @@ class TrilhasService extends FirestoreService<Trilha> {
     return firestore
       .collection(collection)
       .where('createdBy', isEqualTo: email)
-      .orderBy('createdAt', descending: true)
       .snapshots()
       .map((s) => s.docs.map((d) => fromMap(d.data(), d.id)).toList());
   }
