@@ -7,6 +7,9 @@ import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
+import 'package:SkillUp/features/tarefas/data/tarefa_repository.dart';
+import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -25,32 +28,30 @@ void toggleSelected(ListItem item) {
   item.isSelected = !item.isSelected;
 }
 
-var taskList = [
-  ClassifiedList(
-    classifier: "Prova Gestão de Vendas",
-    items: [
-      ListItem(
-        title: "Estudar Canais de Vendas",
-        subtitle: "Prova gestão de vendas",
-        onTap: toggleSelected,
-        isSelected: true,
-        date: "14/03/2026",
-      ),
-    ],
-  ),
-  ClassifiedList(
-    classifier: "Prova Administração de Empresas",
-    items: [
-      ListItem(
-        title: "Estudar Fluxo de Caixa",
-        subtitle: "Prova administração financeira",
-        onTap: toggleSelected,
-        isSelected: false,
-        date: "20/04/2026",
-      ),
-    ],
-  ),
-];
+/// Converte as tarefas do repositório nos grupos exibidos no card "TAREFAS".
+///
+/// As tarefas são agrupadas pela meta relacionada (vira o título do grupo).
+/// Como é lido a cada build, ao voltar para a trilha após criar/editar uma
+/// tarefa a lista já reflete os dados salvos no repositório.
+List<ClassifiedList> _tarefasAgrupadas(BuildContext context) {
+  final grupos = <String, List<ListItem>>{};
+
+  for (final TarefaDetail tarefa in TarefaRepository.instance.tarefas) {
+    final item = ListItem(
+      title: tarefa.titulo,
+      subtitle: tarefa.metaRelacionada,
+      onTap: toggleSelected,
+      date: tarefa.dataPrazo,
+      // Ao tocar no card, abre o detalhe dessa tarefa específica.
+      onOpen: () => TarefasNavigation.goToDetalhe(context, tarefa),
+    );
+    grupos.putIfAbsent(tarefa.metaRelacionada, () => []).add(item);
+  }
+
+  return grupos.entries
+      .map((grupo) => ClassifiedList(classifier: grupo.key, items: grupo.value))
+      .toList();
+}
 
 void addTarefa() {
   print("Tarefa adicionada");
@@ -155,8 +156,8 @@ class TrilhasPage extends StatelessWidget {
 
             CardListWrapper(
               title: "TAREFAS", 
-              items: taskList, 
-              onAdd: () => print("Add"),
+              items: _tarefasAgrupadas(context), 
+              onAdd: () => TarefasNavigation.goToCriarTarefa(context),
               
             )
           ],

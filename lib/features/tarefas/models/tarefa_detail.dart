@@ -1,6 +1,7 @@
 /// Dados exibidos na tela de detalhe de uma tarefa.
 class TarefaDetail {
   const TarefaDetail({
+    required this.id,
     required this.titulo,
     required this.trilhaNome,
     required this.dataInicio,
@@ -9,6 +10,11 @@ class TarefaDetail {
     required this.descricao,
   });
 
+  /// Identidade da tarefa. É o que permite localizar e atualizar uma tarefa
+  /// já existente no repositório. Tarefas novas recebem um id gerado na
+  /// camada de dados (ver `TarefaRepository`).
+  final String id;
+
   final String titulo;
   final String trilhaNome;
   final String dataInicio;
@@ -16,8 +22,33 @@ class TarefaDetail {
   final String metaRelacionada;
   final String descricao;
 
+  /// Cria uma cópia da tarefa alterando apenas os campos informados.
+  ///
+  /// Mantém o modelo imutável: na edição geramos uma nova instância
+  /// preservando o `id` original, em vez de mudar os campos no lugar.
+  TarefaDetail copyWith({
+    String? id,
+    String? titulo,
+    String? trilhaNome,
+    String? dataInicio,
+    String? dataPrazo,
+    String? metaRelacionada,
+    String? descricao,
+  }) {
+    return TarefaDetail(
+      id: id ?? this.id,
+      titulo: titulo ?? this.titulo,
+      trilhaNome: trilhaNome ?? this.trilhaNome,
+      dataInicio: dataInicio ?? this.dataInicio,
+      dataPrazo: dataPrazo ?? this.dataPrazo,
+      metaRelacionada: metaRelacionada ?? this.metaRelacionada,
+      descricao: descricao ?? this.descricao,
+    );
+  }
+
   /// Dados mock para desenvolvimento e testes da tela de detalhe.
   static const mock = TarefaDetail(
+    id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
     trilhaNome: 'Administração de Empresas',
     dataInicio: '18 de abril de 2026',

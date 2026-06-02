@@ -1,5 +1,4 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
-import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
@@ -70,10 +69,9 @@ class CardItem extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: TextButton(
-                    onPressed: () => Navigator.pushReplacementNamed(
-                      context,
-                      AuthRoutes.tarefas,
-                    ),
+                    // Abre o detalhe da tarefa tocada. Sem callback definido
+                    // (ex.: lista de habilidades), o título fica sem ação.
+                    onPressed: item.onOpen,
                     style: TextButton.styleFrom(
                       alignment: Alignment.centerLeft,
                       padding: EdgeInsets.zero,

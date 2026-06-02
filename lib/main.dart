@@ -11,6 +11,8 @@ import 'features/auth/pages/signup_page.dart';
 import 'features/home/home_page.dart';
 import 'features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/routes/tarefas_routes.dart';
+import 'package:SkillUp/features/tarefas/views/tarefa_create_page.dart';
 import 'package:SkillUp/features/tarefas/views/tarefa_detail_page.dart';
 
 void main() async {
@@ -51,6 +53,17 @@ class SkillUp extends StatelessWidget {
       ),
       initialRoute: AuthRoutes.login,
       onGenerateRoute: (settings) {
+        // A tela de detalhe recebe, via arguments, a tarefa que foi tocada
+        // na trilha — assim exibimos os dados reais em vez de um mock.
+        if (settings.name == TarefasRoutes.detalhe &&
+            settings.arguments is TarefaDetail) {
+          final tarefa = settings.arguments as TarefaDetail;
+          return MaterialPageRoute(
+            builder: (_) => TarefaDetailPage(tarefa: tarefa),
+            settings: settings,
+          );
+        }
+
         final routes = {
           AuthRoutes.login: (_) => const LoginPage(),
           AuthRoutes.signup: (_) => const SignupPage(),
@@ -61,7 +74,7 @@ class SkillUp extends StatelessWidget {
           '/home': (_) => const HomePage(
             userName: "Guylherme"
           ),
-          AuthRoutes.tarefas: (_) => const TarefaDetailPage(tarefa: TarefaDetail.mock),
+          TarefasRoutes.criar: (_) => const TarefaCreatePage(),
         };
 
         final builder = routes[settings.name];
