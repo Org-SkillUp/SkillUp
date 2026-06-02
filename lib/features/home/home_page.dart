@@ -6,7 +6,7 @@ import 'package:SkillUp/core/widgets/progress_card.dart';
 import 'package:SkillUp/core/widgets/warning_card.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
 import 'package:SkillUp/core/widgets/header_card.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/trilhas/models/list.dart';
 
 void toggleSelected(ListItem item) {
   item.isSelected = !item.isSelected;

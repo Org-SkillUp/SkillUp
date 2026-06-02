@@ -7,164 +7,245 @@ import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/trilhas/models/list.dart';
+import 'package:SkillUp/features/trilhas/models/trilha.dart';
+import 'package:SkillUp/features/trilhas/services/trilhas_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-const options = [
-  'Administração de Empresas',
-  'Tecnologia',
-  'Design',
-];
-
-const cardsInfo = [
-  "14/03/2026",
-  "Ativa"
-];
-
-void toggleSelected(ListItem item) {
-  item.isSelected = !item.isSelected;
-}
-
-var taskList = [
-  ClassifiedList(
-    classifier: "Prova Gestão de Vendas",
-    items: [
-      ListItem(
-        title: "Estudar Canais de Vendas",
-        subtitle: "Prova gestão de vendas",
-        onTap: toggleSelected,
-        isSelected: true,
-        date: "14/03/2026",
-      ),
-    ],
-  ),
-  ClassifiedList(
-    classifier: "Prova Administração de Empresas",
-    items: [
-      ListItem(
-        title: "Estudar Fluxo de Caixa",
-        subtitle: "Prova administração financeira",
-        onTap: toggleSelected,
-        isSelected: false,
-        date: "20/04/2026",
-      ),
-    ],
-  ),
-];
-
-void addTarefa() {
-  print("Tarefa adicionada");
-}
-
-class TrilhasPage extends StatelessWidget {
+class TrilhasPage extends StatefulWidget {
   const TrilhasPage({super.key});
+
+  @override
+  State<TrilhasPage> createState() => _TrilhasPageState();
+}
+
+class _TrilhasPageState extends State<TrilhasPage> {
+  final _service = TrilhasService();
+
+  final String _userEmail =
+    FirebaseAuth.instance.currentUser?.email ?? 'unknown';
+
+  List<Trilha> _trilhas = [];
+  Trilha? _selected;
+
+  int get _totalTasks =>
+    _selected?.tarefas.fold(0, (sum, cl) => sum! + cl.items.length) ?? 0;
+
+  int get _finishedTasks =>
+    _selected?.tarefas.fold(
+      0,
+      (sum, cl) => sum! + cl.items.where((i) => i.isSelected).length,
+    ) ?? 0;
+
+  String get _progressLabel =>
+    '$_finishedTasks de $_totalTasks tarefas concluídas';
+
+  String get _progressValue => _totalTasks == 0
+    ? '0%'
+    : '${((_finishedTasks / _totalTasks) * 100).round()}%';
+
+  String get _startDate {
+    final d = _selected?.startedAt;
+    if (d == null) return '—';
+    return '${d.day.toString().padLeft(2, '0')}/'
+      '${d.month.toString().padLeft(2, '0')}/'
+      '${d.year}';
+  }
+
+  Color get _statusColor => switch (_selected?.status) {
+    TrilhaStatus.active => const Color(0xFF55B3D5),
+    TrilhaStatus.paused => const Color(0xFFE5A020),
+    TrilhaStatus.completed => const Color(0xFF4CAF50),
+    TrilhaStatus.canceled => const Color(0xFFE53935),
+    _ => const Color(0xFF55B3D5),
+  };
+
+  void _onTrilhasUpdated(List<Trilha> trilhas) {
+    final stillExists = trilhas.any((t) => t.id == _selected?.id);
+
+    setState(() {
+      _trilhas = trilhas;
+      _selected = stillExists
+        ? trilhas.firstWhere((t) => t.id == _selected!.id)
+        : trilhas.isNotEmpty ? trilhas.first : null;
+    });
+  }
+
+  void _onTrilhaChanged(String? newId) {
+    if (newId == null) return;
+    setState(() {
+      _selected = _trilhas.firstWhere(
+        (t) => t.id == newId,
+        orElse: () => _selected!,
+      );
+    });
+  }
+
+  Future<void> _togglePause() async {
+    if (_selected == null) return;
+
+    final novoStatus = _selected!.status == TrilhaStatus.paused
+        ? TrilhaStatus.active
+        : TrilhaStatus.paused;
+
+    setState(() {
+      _selected = _selected!.copyWith(status: novoStatus);
+      final idx = _trilhas.indexWhere((t) => t.id == _selected!.id);
+      if (idx != -1) _trilhas[idx] = _selected!;
+    });
+
+    await _service.updateStatus(_selected!.id!, novoStatus);
+  }
+
+  void _onTaskToggle(ListItem item) {
+    setState(() => item.isSelected = !item.isSelected);
+    // TODO: persistir alteração de tarefa no Firestore quando modelo estiver pronto
+  }
 
   @override
   Widget build(BuildContext context) {
     final stButton = Theme.of(context).extension<StateButtonTheme>()!;
-    
-    return Scaffold(
-      appBar: TopAppBar(),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: SelectableTitle(
-                    label: 'Trilha Selecionada',
-                    underLabel: '1 de 2 tarefas concluídas',
-                    options: options,
-                    selected: options[0],
-                    onChanged: (_) {},
-                  ),
-                ),
 
-                const SizedBox(width: 28),
+    return StreamBuilder<List<Trilha>>(
+      stream: _service.readListByUser(_userEmail),
+      builder: (context, snapshot) {
 
-                // TODO: implementar lógica de cálculo de progresso
-                QuantityIndicator(value: "50%")
-              ],
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: TopAppBar(),
+            body: Center(
+              child: Text('Erro ao carregar trilhas: ${snapshot.error}'),
             ),
+            bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
+          );
+        }
 
-            const SizedBox(height: 16),
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
 
-            Row(
+        final trilhas = snapshot.data ?? [];
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _onTrilhasUpdated(trilhas);
+        });
+
+        if (trilhas.isEmpty) {
+          return Scaffold(
+            appBar: TopAppBar(),
+            body: const Center(child: Text('Nenhuma trilha encontrada.')),
+            bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
+          );
+        }
+
+        final selected = _selected ?? trilhas.first;
+        final isPaused = selected.status == TrilhaStatus.paused;
+
+        return Scaffold(
+          appBar: TopAppBar(),
+          body: SafeArea(
+            child: ListView(
+              padding: const EdgeInsets.all(16),
               children: [
-                Expanded(
-                  child: Indicator(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Início',
-                    value: cardsInfo[0],
-                  ),
-                ),
-                const SizedBox(width: 32),
-                Expanded(
-                  child: Indicator(
-                    icon: Icons.circle,
-                    label: 'Status',
-                    value: cardsInfo[1],
-                    // TODO: implementar cores dinâmicas de acordo com status
-                    dotColor: const Color(0xFF55B3D5),
-                    valueColor: const Color(0xFF55B3D5),
-                  ),
-                ),
-              ],
-            ),
 
-            const SizedBox(height: 20),
-
-            Column(
-              children: [
-                StateButton(
-                  onPressed: () {},
-                  label: Text(
-                    'PAUSAR',
-                    style: TextStyle(
-                      color: stButton.outlinedYellowHighlighColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Arimo',
-                      fontSize: 16,
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectableTitle(
+                        label: 'Trilha Selecionada',
+                        underLabel: _progressLabel,
+                        options: trilhas.map((t) => t.id!).toList(),
+                        selected: selected.id!,
+                        onChanged: _onTrilhaChanged,
+                      ),
                     ),
-                  ),
-                  bgColor: stButton.outlinedBackgroundColor,
-                  borderColor: stButton.outlinedYellowHighlighColor,
-                  borderRadius: 14,
+                    const SizedBox(width: 28),
+                    QuantityIndicator(value: _progressValue),
+                  ],
                 ),
+
                 const SizedBox(height: 16),
-                StateButton(
-                  onPressed: () {},
-                  label: Text(
-                    'NOVA TRILHA',
-                    style: TextStyle(
-                      color: stButton.plainLabelColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Arimo',
-                      fontSize: 16,
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: Indicator(
+                        icon: Icons.calendar_today_outlined,
+                        label: 'Início',
+                        value: _startDate,
+                      ),
                     ),
-                  ),
-                  bgColor: stButton.plainBackgroundColor,
-                  borderRadius: 16,
-                  icon: Icon(Icons.add, color: stButton.plainLabelColor),
+                    const SizedBox(width: 32),
+                    Expanded(
+                      child: Indicator(
+                        icon: Icons.circle,
+                        label: 'Status',
+                        value: selected.status.label,
+                        dotColor: _statusColor,
+                        valueColor: _statusColor,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                Column(
+                  children: [
+                    StateButton(
+                      onPressed: _togglePause,
+                      label: Text(
+                        isPaused ? 'RETOMAR' : 'PAUSAR',
+                        style: TextStyle(
+                          color: stButton.outlinedYellowHighlighColor,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Arimo',
+                          fontSize: 16,
+                        ),
+                      ),
+                      bgColor: stButton.outlinedBackgroundColor,
+                      borderColor: stButton.outlinedYellowHighlighColor,
+                      borderRadius: 14,
+                    ),
+                    const SizedBox(height: 16),
+                    StateButton(
+                      onPressed: () {
+                        // TODO: abrir nova trilha
+                      },
+                      label: Text(
+                        'NOVA TRILHA',
+                        style: TextStyle(
+                          color: stButton.plainLabelColor,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Arimo',
+                          fontSize: 16,
+                        ),
+                      ),
+                      bgColor: stButton.plainBackgroundColor,
+                      borderRadius: 16,
+                      icon: Icon(Icons.add, color: stButton.plainLabelColor),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 20),
+
+                CardListWrapper(
+                  title: 'TAREFAS',
+                  items: selected.tarefas,
+                  onAdd: () {
+                    // TODO: implementar criação de tarefa
+                  },
                 ),
               ],
             ),
-
-            SizedBox(height: 20),
-
-            CardListWrapper(
-              title: "TAREFAS", 
-              items: taskList, 
-              onAdd: () => print("Add"),
-              
-            )
-          ],
-        ),
-      ),
-      bottomNavigationBar: BotAppBar(
-        selectedPage: AuthRoutes.trilhas,
-      ),
+          ),
+          bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
+        );
+      },
     );
   }
 }
