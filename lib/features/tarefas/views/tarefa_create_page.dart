@@ -53,17 +53,24 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
       );
   }
 
-  void _handleCreate() {
+  Future<void> _handleCreate() async {
     // Validação mínima: o título é obrigatório para identificar a tarefa.
     if (_controllers.titulo.text.trim().isEmpty) {
       _showErrorSnackBar('Informe ao menos o título da tarefa.');
       return;
     }
 
-    // Persiste a nova tarefa no repositório (o id é gerado lá dentro) e
-    // volta para a trilha, onde a tarefa recém-criada já aparecerá.
-    TarefaRepository.instance.adicionar(_controllers.toTarefa());
-    TarefasNavigation.goToTrilhas(context);
+    try {
+      // Grava a nova tarefa no Firestore (o id do documento é gerado lá).
+      await TarefaRepository.instance.adicionar(_controllers.toTarefa());
+
+      // Após o await, o context só pode ser usado se a tela ainda existe.
+      if (!mounted) return;
+      TarefasNavigation.goToTrilhas(context);
+    } catch (_) {
+      if (!mounted) return;
+      _showErrorSnackBar('Não foi possível salvar a tarefa. Tente novamente.');
+    }
   }
 
   @override

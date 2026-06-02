@@ -1,65 +1,51 @@
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Repositório em memória das tarefas.
+/// Repositório das tarefas, agora ligado ao Cloud Firestore.
 ///
-/// Como o app ainda não possui backend, guardamos as tarefas em uma lista
-/// que vive apenas durante a sessão (some ao fechar o app). É um *singleton*
-/// — uma instância única compartilhada — para que TODAS as telas leiam e
-/// gravem na mesma lista. Assim, ao criar/editar em uma tela, a outra
-/// enxerga a mudança.
+/// É o ÚNICO ponto que conversa com o banco (clean architecture): as telas
+/// falam com o repositório, e o repositório fala com o Firestore. Assim, se
+/// um dia trocarmos o banco, só este arquivo muda.
+///
+/// Os dados ficam na coleção `tarefas`. O id de cada [TarefaDetail] é o id
+/// do documento no Firestore, o que permite atualizar/remover com precisão.
 class TarefaRepository {
-  // Construtor privado: ninguém de fora consegue criar outra instância.
+  // Construtor privado: ninguém de fora cria outra instância.
   TarefaRepository._();
 
   /// Instância única usada por todo o app.
   static final TarefaRepository instance = TarefaRepository._();
 
-  // Lista inicial com dados de exemplo (inclui o mock da tela de detalhe).
-  final List<TarefaDetail> _tarefas = [
-    TarefaDetail.mock,
-    const TarefaDetail(
-      id: 'seed-canais-vendas',
-      titulo: 'Estudar Canais de Vendas',
-      trilhaNome: 'Administração de Empresas',
-      dataInicio: '10 de março de 2026',
-      dataPrazo: '14 de março de 2026',
-      metaRelacionada: 'Prova gestão de vendas',
-      descricao:
-          'Revisar os principais canais de vendas e seus indicadores de '
-          'desempenho antes da prova.',
-    ),
-  ];
+  // Referência à coleção de tarefas no Firestore.
+  final CollectionReference<Map<String, dynamic>> _colecao =
+      FirebaseFirestore.instance.collection('tarefas');
 
-  // Contador simples para gerar ids únicos das novas tarefas.
-  int _proximoId = 1;
-
-  /// Lista de tarefas em modo somente leitura, evitando que outras camadas
-  /// alterem a lista interna por engano (encapsulamento).
-  List<TarefaDetail> get tarefas => List.unmodifiable(_tarefas);
-
-  /// Adiciona uma nova tarefa gerando um id único e a devolve já com o id.
+  /// Observa a lista de tarefas em tempo real.
   ///
-  /// O id que vier na [tarefa] é ignorado de propósito: quem decide a
-  /// identidade de uma tarefa nova é a camada de dados.
-  TarefaDetail adicionar(TarefaDetail tarefa) {
-    final nova = tarefa.copyWith(id: _gerarId());
-    _tarefas.add(nova);
-    return nova;
+  /// Retorna um [Stream]: sempre que algo muda no banco (criar/editar/excluir,
+  /// inclusive de outro dispositivo), a tela que escuta este stream é
+  /// reconstruída automaticamente com os dados atualizados.
+  Stream<List<TarefaDetail>> observarTarefas() {
+    return _colecao.snapshots().map(
+          (snapshot) => snapshot.docs
+              .map((doc) => TarefaDetail.fromMap(doc.id, doc.data()))
+              .toList(),
+        );
   }
 
-  /// Atualiza uma tarefa existente, localizada pelo [id]. Se não encontrar
-  /// (id inexistente), nada acontece.
-  void atualizar(TarefaDetail tarefa) {
-    final indice = _tarefas.indexWhere((t) => t.id == tarefa.id);
-    if (indice == -1) return;
-    _tarefas[indice] = tarefa;
+  /// Cria uma nova tarefa. O Firestore gera o id do documento
+  /// automaticamente (por isso o id que vier na [tarefa] é ignorado).
+  Future<void> adicionar(TarefaDetail tarefa) async {
+    await _colecao.add(tarefa.toMap());
   }
 
-  /// Remove a tarefa identificada por [id]. Se o id não existir, nada
-  /// acontece (operação segura, sem erro).
-  void remover(String id) {
-    _tarefas.removeWhere((t) => t.id == id);
+  /// Atualiza a tarefa existente cujo id de documento é [TarefaDetail.id].
+  Future<void> atualizar(TarefaDetail tarefa) async {
+    await _colecao.doc(tarefa.id).update(tarefa.toMap());
   }
 
-  String _gerarId() => 'tarefa-${_proximoId++}';
+  /// Remove a tarefa identificada por [id] (id do documento).
+  Future<void> remover(String id) async {
+    await _colecao.doc(id).delete();
+  }
 }

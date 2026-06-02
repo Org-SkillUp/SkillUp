@@ -28,15 +28,18 @@ void toggleSelected(ListItem item) {
   item.isSelected = !item.isSelected;
 }
 
-/// Converte as tarefas do repositório nos grupos exibidos no card "TAREFAS".
+/// Converte uma lista de tarefas nos grupos exibidos no card "TAREFAS".
 ///
 /// As tarefas são agrupadas pela meta relacionada (vira o título do grupo).
-/// Como é lido a cada build, ao voltar para a trilha após criar/editar uma
-/// tarefa a lista já reflete os dados salvos no repositório.
-List<ClassifiedList> _tarefasAgrupadas(BuildContext context) {
+/// Recebe a lista pronta (vinda do Firestore) em vez de ler o banco aqui,
+/// mantendo esta função simples e fácil de testar.
+List<ClassifiedList> _tarefasAgrupadas(
+  BuildContext context,
+  List<TarefaDetail> tarefas,
+) {
   final grupos = <String, List<ListItem>>{};
 
-  for (final TarefaDetail tarefa in TarefaRepository.instance.tarefas) {
+  for (final TarefaDetail tarefa in tarefas) {
     final item = ListItem(
       title: tarefa.titulo,
       subtitle: tarefa.metaRelacionada,
@@ -53,12 +56,22 @@ List<ClassifiedList> _tarefasAgrupadas(BuildContext context) {
       .toList();
 }
 
-void addTarefa() {
-  print("Tarefa adicionada");
+class TrilhasPage extends StatefulWidget {
+  const TrilhasPage({super.key});
+
+  @override
+  State<TrilhasPage> createState() => _TrilhasPageState();
 }
 
-class TrilhasPage extends StatelessWidget {
-  const TrilhasPage({super.key});
+class _TrilhasPageState extends State<TrilhasPage> {
+  // Guarda o stream uma única vez para não recriar a inscrição a cada build.
+  late final Stream<List<TarefaDetail>> _tarefasStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _tarefasStream = TarefaRepository.instance.observarTarefas();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -154,12 +167,53 @@ class TrilhasPage extends StatelessWidget {
 
             SizedBox(height: 20),
 
-            CardListWrapper(
-              title: "TAREFAS", 
-              items: _tarefasAgrupadas(context), 
-              onAdd: () => TarefasNavigation.goToCriarTarefa(context),
-              
-            )
+            // Escuta as tarefas do Firestore e reconstrói o card a cada
+            // mudança no banco (criação, edição ou exclusão).
+            StreamBuilder<List<TarefaDetail>>(
+              stream: _tarefasStream,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (snapshot.hasError) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 24),
+                    child: Text(
+                      'Não foi possível carregar as tarefas.',
+                      style: TextStyle(color: Colors.white, fontFamily: 'Arimo'),
+                    ),
+                  );
+                }
+
+                final tarefas = snapshot.data ?? const <TarefaDetail>[];
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CardListWrapper(
+                      title: "TAREFAS",
+                      items: _tarefasAgrupadas(context, tarefas),
+                      onAdd: () => TarefasNavigation.goToCriarTarefa(context),
+                    ),
+                    if (tarefas.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Nenhuma tarefa cadastrada ainda.',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontFamily: 'Arimo',
+                          ),
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

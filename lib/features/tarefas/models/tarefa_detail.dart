@@ -46,6 +46,36 @@ class TarefaDetail {
     );
   }
 
+  /// Converte a tarefa em um mapa para gravar no Firestore.
+  ///
+  /// O `id` NÃO entra no mapa de propósito: no Firestore ele é o id do
+  /// documento, então guardá-lo aqui dentro seria informação duplicada.
+  Map<String, dynamic> toMap() {
+    return {
+      'titulo': titulo,
+      'trilhaNome': trilhaNome,
+      'dataInicio': dataInicio,
+      'dataPrazo': dataPrazo,
+      'metaRelacionada': metaRelacionada,
+      'descricao': descricao,
+    };
+  }
+
+  /// Reconstrói uma tarefa a partir do id do documento e dos dados do
+  /// Firestore. Usa `?? ''` para tolerar documentos com campos faltando,
+  /// evitando erros de leitura.
+  factory TarefaDetail.fromMap(String id, Map<String, dynamic> map) {
+    return TarefaDetail(
+      id: id,
+      titulo: (map['titulo'] ?? '') as String,
+      trilhaNome: (map['trilhaNome'] ?? '') as String,
+      dataInicio: (map['dataInicio'] ?? '') as String,
+      dataPrazo: (map['dataPrazo'] ?? '') as String,
+      metaRelacionada: (map['metaRelacionada'] ?? '') as String,
+      descricao: (map['descricao'] ?? '') as String,
+    );
+  }
+
   /// Dados mock para desenvolvimento e testes da tela de detalhe.
   static const mock = TarefaDetail(
     id: 'mock',

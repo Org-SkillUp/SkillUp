@@ -48,13 +48,15 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
     super.dispose();
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool erro = false}) {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: const Color(0xFF5A969A),
+          // Vermelho em caso de erro; verde-azulado em caso de sucesso.
+          backgroundColor:
+              erro ? const Color(0xFFCF8080) : const Color(0xFF5A969A),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -82,18 +84,27 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
     setState(() => _isEditing = false);
   }
 
-  void _saveEdit() {
-    // Preserva o id atual para que o repositório atualize a tarefa certa,
+  Future<void> _saveEdit() async {
+    // Preserva o id atual para que o Firestore atualize a tarefa certa,
     // em vez de criar uma nova.
     final atualizada = _controllers.toTarefa(id: _tarefa.id);
 
-    TarefaRepository.instance.atualizar(atualizada);
+    try {
+      await TarefaRepository.instance.atualizar(atualizada);
 
-    setState(() {
-      _tarefa = atualizada;
-      _isEditing = false;
-    });
-    _showSnackBar('Tarefa atualizada com sucesso.');
+      if (!mounted) return;
+      setState(() {
+        _tarefa = atualizada;
+        _isEditing = false;
+      });
+      _showSnackBar('Tarefa atualizada com sucesso.');
+    } catch (_) {
+      if (!mounted) return;
+      _showSnackBar(
+        'Não foi possível atualizar a tarefa. Tente novamente.',
+        erro: true,
+      );
+    }
   }
 
   Future<void> _confirmarExclusao() async {
@@ -124,11 +135,21 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
     );
 
     // O diálogo é assíncrono: garante que o widget ainda está na árvore
-    // antes de usar o context para navegar.
+    // antes de usar o context.
     if (confirmado != true || !mounted) return;
 
-    TarefaRepository.instance.remover(_tarefa.id);
-    TarefasNavigation.goToTrilhas(context);
+    try {
+      await TarefaRepository.instance.remover(_tarefa.id);
+
+      if (!mounted) return;
+      TarefasNavigation.goToTrilhas(context);
+    } catch (_) {
+      if (!mounted) return;
+      _showSnackBar(
+        'Não foi possível excluir a tarefa. Tente novamente.',
+        erro: true,
+      );
+    }
   }
 
   @override
