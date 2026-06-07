@@ -12,6 +12,7 @@ import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:SkillUp/features/trilhas/services/trilhas_service.dart';
+import 'package:SkillUp/features/trilhas/views/blank_trilhas_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -129,68 +130,8 @@ class _TrilhasPageState extends State<TrilhasPage> {
         }
 
         if (trilhas.isEmpty) {
-          return Scaffold(
-            appBar: TopAppBar(),
-            body: SafeArea(
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  if (_isCreating) ...[
-                    TextFieldBuilder.buildTextField(
-                      hint: "Nome da Trilha",
-                      fillColor: Colors.white,
-                      controller: _trilhaNomeController,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    StateButton(
-                      onPressed: () async {
-                        final name = _trilhaNomeController.text.trim();
-                        if (name.isEmpty) return;
-
-                        await _service.create(Trilha(
-                          title: name,
-                          subtitle: "",
-                          duedate: DateTime.now(),
-                        ));
-
-                        setState(() {
-                          _isCreating = false;
-                          _trilhaNomeController.clear();
-                        });
-                      },
-                      label: Text('CONFIRMAR'),
-                      bgColor: stButton.plainBackgroundColor,
-                      borderRadius: 16,
-                    ),
-
-                    const SizedBox(height: 16),
-                  ],
-
-                  Center(
-                    child: StateButton(
-                      onPressed: () {
-                        setState(() => _isCreating = true);
-                      },
-                      label: Text(
-                        'NOVA TRILHA',
-                        style: TextStyle(
-                          color: stButton.plainLabelColor,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Arimo',
-                          fontSize: 16,
-                        ),
-                      ),
-                      bgColor: stButton.plainBackgroundColor,
-                      borderRadius: 16,
-                      icon: Icon(Icons.add, color: stButton.plainLabelColor),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
+          return BlankTrilhasView(
+            onCreateTrilha: (trilha) => _service.create(trilha),
           );
         }
 

@@ -8,12 +8,14 @@ class TextFieldBuilder {
     required Color fillColor,
     bool obscureText = false,
     TextEditingController? controller,
+    TextStyle? style,
+    InputDecoration? decoration,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
+      style: style ?? const TextStyle(color: Colors.white),
+      decoration: decoration ?? InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.white70),
         filled: true,

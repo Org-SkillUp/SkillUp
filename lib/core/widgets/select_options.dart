@@ -39,7 +39,7 @@ class SelectOptions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: options.keys.contains(selected) ? selectedLabel : null,
+          value: options.keys.contains(selected) ? selected : null,
           dropdownColor: colorScheme.surface,
           iconEnabledColor: colorScheme.primary,
           icon: SvgPicture.asset(
