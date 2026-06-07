@@ -7,6 +7,7 @@ class SelectOptions extends StatelessWidget {
     super.key,
     required this.options,
     required this.selected,
+    required this.selectedLabel,
     required this.onChanged,
     this.allowCreation = false,
     this.onCreated,
@@ -15,8 +16,9 @@ class SelectOptions extends StatelessWidget {
     'Metódo de criação (onCreated) não fornecido',
   );
 
-  final List<String> options;
+  final Map<String, String> options;
   final String selected;
+  final String selectedLabel;
   final ValueChanged<String> onChanged;
   final bool allowCreation;
   final ValueChanged<String>? onCreated;
@@ -37,7 +39,7 @@ class SelectOptions extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: options.contains(selected) ? selected : null,
+          value: options.keys.contains(selected) ? selected : null,
           dropdownColor: colorScheme.surface,
           iconEnabledColor: colorScheme.primary,
           icon: SvgPicture.asset(
@@ -57,11 +59,11 @@ class SelectOptions extends StatelessWidget {
             if (value != null) onChanged(value);
           },
           items: [
-            ...options.map(
+            ...options.entries.map(
               (option) => DropdownMenuItem(
-                value: option,
+                value: option.key,
                 child: Text(
-                  option,
+                  option.value,
                   style: TextStyle(
                     fontFamily: 'Arimo'
                   ),

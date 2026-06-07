@@ -4,7 +4,7 @@ import 'package:SkillUp/core/widgets/card_item.dart';
 import 'package:SkillUp/core/widgets/indicator.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

@@ -1,6 +1,6 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:flutter/material.dart';
 
 class CardItem extends StatelessWidget {

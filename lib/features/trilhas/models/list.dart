@@ -14,6 +14,7 @@ class ListItem {
   String? date;
 }
 
+// TODO: atualizar para lista de tarefas.
 class ClassifiedList {
   ClassifiedList({
     this.classifier,

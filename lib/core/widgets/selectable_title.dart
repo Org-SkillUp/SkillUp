@@ -1,37 +1,63 @@
+import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:SkillUp/core/widgets/select_options.dart';
 import 'package:flutter/material.dart';
 
-class SelectableTitle extends StatelessWidget {
+class SelectableTitle extends StatefulWidget {
   const SelectableTitle({
     super.key,
     required this.label,
+    required this.selectedLabel,
     this.underLabel,
     required this.options,
     required this.selected,
     required this.onChanged,
     this.allowCreation = false,
     this.onCreated,
+    this.controller,
   });
 
   final String label;
+  final String selectedLabel;
   final String? underLabel;
-  final List<String> options;
+  final Map<String, String> options;
   final String selected;
   final ValueChanged<String> onChanged;
   final bool allowCreation;
   final ValueChanged<String>? onCreated;
+  final TextEditingController? controller;
+
+  @override
+  State<SelectableTitle> createState() => _SelectableTitleState();
+}
+
+class _SelectableTitleState extends State<SelectableTitle> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = widget.controller ?? TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    if (widget.controller == null) _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
+    final showTextField = widget.allowCreation && widget.options.isEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          label,
+          widget.label,
           style: textTheme.labelMedium?.copyWith(
             color: colorScheme.primary.withAlpha(153),
             fontFamily: 'Arimo',
@@ -39,18 +65,26 @@ class SelectableTitle extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        SelectOptions(
-          options: options,
-          selected: selected,
-          onChanged: onChanged,
-          allowCreation: allowCreation,
-          onCreated: onCreated,
-        ),
+        if (showTextField)
+          TextFieldBuilder.buildTextField(
+            hint: "Nome da Trilha",
+            fillColor: const Color(0xFF26364C),
+            controller: _controller,
+          )
+        else
+          SelectOptions(
+            options: widget.options,
+            selected: widget.selected,
+            selectedLabel: widget.selectedLabel,
+            onChanged: widget.onChanged,
+            allowCreation: widget.allowCreation,
+            onCreated: widget.onCreated,
+          ),
 
-        if (underLabel != null) ...[
+        if (widget.underLabel != null) ...[
           const SizedBox(height: 8),
           Text(
-            underLabel!,
+            widget.underLabel!,
             style: textTheme.labelSmall?.copyWith(
               color: colorScheme.primary.withAlpha(153),
               fontFamily: 'Arimo',

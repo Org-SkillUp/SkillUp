@@ -1,5 +1,5 @@
 import 'package:SkillUp/core/widgets/card_item.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:flutter/material.dart';
 
 class CardListWrapper extends StatelessWidget {
