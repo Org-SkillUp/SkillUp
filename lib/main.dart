@@ -59,7 +59,7 @@ class SkillUp extends StatelessWidget {
           // TODO: atualizar ao implementar login funcional
           AuthRoutes.conta: (_) => const ContaPage(),
           '/home': (_) => const HomePage(
-            userName: "Guylherme"
+            userName: "Pedro"
           ),
           AuthRoutes.tarefas: (_) => const TarefaDetailPage(tarefa: TarefaDetail.mock),
         };

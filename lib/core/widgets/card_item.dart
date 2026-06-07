@@ -110,18 +110,12 @@ class CardItem extends StatelessWidget {
                           size: 12,
                           color: cardItemTheme.labelColor.withAlpha((255/2).round())),
                         const SizedBox(width: 6),
-                        Text(
-                          'Prazo: ${item.date}',
-                          style: textTheme.labelSmall?.copyWith(
-                            color: muted,
-                            fontFamily: 'Arimo',
-                          ),
-                        ),
-                        const SizedBox(width: 6),
                       ],
                       Text(
                         '$datePrefix${item.date}',
-                        style: textTheme.labelSmall?.copyWith(color: muted),
+                        style: textTheme.labelSmall?.copyWith(
+                          color: muted,
+                          fontFamily: 'Arimo',),
                       ),
                     ],
                   ),
