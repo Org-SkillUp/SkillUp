@@ -36,29 +36,29 @@ void _toggleSelected(ListItem item) {
   });
 }
 //tasks
-void _loadTasks() {
-  homeTasks = [
-  ClassifiedList(
-    classifier: "Hoje",
-    items: [
-      ListItem(
-        title: "Estudar Fluxo de Caixa",
-        subtitle: "Administração de Empresas",
-        date: "20/04/2026",
-        isSelected: false,
-        onTap: _toggleSelected,
-      ),
-      ListItem(
-        title: "Elaborar Plano de Marketing",
-        subtitle: "Marketing",
-        date: "23/04/2026",
-        isSelected: false,
-        onTap: _toggleSelected,
-       ),
-     ],
-   ),
- ];
-}
+  void _loadTasks() {
+    homeTasks = [
+    ClassifiedList(
+      classifier: "Hoje",
+      items: [
+        ListItem(
+          title: "Estudar Fluxo de Caixa",
+          subtitle: "Administração de Empresas",
+          date: "20/04/2026",
+          isSelected: false,
+          onTap: _toggleSelected,
+        ),
+        ListItem(
+          title: "Elaborar Plano de Marketing",
+          subtitle: "Marketing",
+          date: "23/04/2026",
+          isSelected: false,
+          onTap: _toggleSelected,
+        ),
+      ],
+    ),
+  ];
+  }
 
   Widget _buildWarningsSection() {
     return const Column(
@@ -83,7 +83,7 @@ void _loadTasks() {
       child: ListView(
         children: [
           CardListWrapper(
-            title: "Tarefas Prróximas",
+            title: "Tarefas Próximas",
             subtitle: "Tarefas com prazo nos próximos dias",
             onExpand:() => {},
             items: homeTasks,
