@@ -8,17 +8,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/signup_page.dart';
-import 'features/home/home_page.dart';
 import 'features/auth/routes/auth_routes.dart';
+import 'features/home/home_page.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:SkillUp/features/tarefas/views/tarefa_detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   runApp(const SkillUp());
 }
 
@@ -31,7 +29,6 @@ class SkillUp extends StatelessWidget {
       title: 'SkillUp',
       theme: AppTheme.mainTheme,
       debugShowCheckedModeBanner: false,
-      
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -42,33 +39,30 @@ class SkillUp extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            // TODO: atualizar ao implementar login funcional
-            return const HomePage(userName: "Guylherme");
+            final user = snapshot.data!;
+            return HomePage(userName: user.email ?? 'Usuário');
           }
 
           return const LoginPage();
-        }
+        },
       ),
-      initialRoute: AuthRoutes.login,
       onGenerateRoute: (settings) {
-        final routes = {
+        final routes = <String, WidgetBuilder>{
           AuthRoutes.login: (_) => const LoginPage(),
           AuthRoutes.signup: (_) => const SignupPage(),
           AuthRoutes.forgotPassword: (_) => const ForgetPasswordPage(),
           AuthRoutes.trilhas: (_) => const TrilhasPage(),
-          // TODO: atualizar ao implementar login funcional
           AuthRoutes.conta: (_) => const ContaPage(),
-          '/home': (_) => const HomePage(
-            userName: "Pedro"
-          ),
-          AuthRoutes.tarefas: (_) => const TarefaDetailPage(tarefa: TarefaDetail.mock),
+          '/home': (_) => const HomePage(userName: 'Usuário'),
+          AuthRoutes.tarefas: (_) =>
+              const TarefaDetailPage(tarefa: TarefaDetail.mock),
         };
 
         final builder = routes[settings.name];
         if (builder != null) {
           return MaterialPageRoute(builder: builder, settings: settings);
         }
-        
+
         return MaterialPageRoute(
           builder: (_) => const LoginPage(),
           settings: settings,
