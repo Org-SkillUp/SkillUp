@@ -1,5 +1,6 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
+import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class CardItem extends StatelessWidget {
     this.trailing,
   });
 
-  final ListItem item;
+  final TarefaDetail item;
   final Color? backgroundColor;
   final double borderRadius;
   final String datePrefix;
@@ -40,7 +41,7 @@ class CardItem extends StatelessWidget {
     final cardItemTheme = Theme.of(context).extension<CardItemTheme>()!;
 
     final textTheme = Theme.of(context).textTheme;
-    final isDimmed = item.isSelected && !disableSelectedStyle;
+    final isDimmed = item.dataConclusao != null && !disableSelectedStyle;
     final muted = cardItemTheme.labelColor.withAlpha((255 / 2).round());
 
     return Container(
@@ -52,7 +53,7 @@ class CardItem extends StatelessWidget {
           left: BorderSide(
             color:
                 sideColor ??
-                (item.isSelected
+                (item.dataConclusao != null
                     ? cardItemTheme.alternativeSideColor
                     : cardItemTheme.defaultSideColor),
             width: sideWidth,
@@ -79,7 +80,7 @@ class CardItem extends StatelessWidget {
                       padding: EdgeInsets.zero,
                     ),
                     child: Text(
-                      item.title,
+                      item.titulo,
                       style: textTheme.bodyMedium?.copyWith(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -93,14 +94,14 @@ class CardItem extends StatelessWidget {
                 
                 const SizedBox(height: 8),
                 Text(
-                  'Meta: ${item.subtitle}',
+                  'Meta: ${item.metaRelacionada}',
                   style: textTheme.labelSmall?.copyWith(
                     color: cardItemTheme.labelColor.withAlpha((255/2).round()),
                     fontSize: 12,
                     fontFamily: 'Arimo',
                   ),
                 ),
-                if (showBottomDate && item.date != null) ...[
+                if (showBottomDate && item.dataPrazo != null) ...[
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -111,7 +112,7 @@ class CardItem extends StatelessWidget {
                           color: cardItemTheme.labelColor.withAlpha((255/2).round())),
                         const SizedBox(width: 6),
                         Text(
-                          'Prazo: ${item.date}',
+                          'Prazo: ${item.dataPrazo?.toString() ?? "Sem prazo"}',
                           style: textTheme.labelSmall?.copyWith(
                             color: muted,
                             fontFamily: 'Arimo',
@@ -120,7 +121,7 @@ class CardItem extends StatelessWidget {
                         const SizedBox(width: 6),
                       ],
                       Text(
-                        '$datePrefix${item.date}',
+                        '$datePrefix${item.dataPrazo?.toString() ?? "Sem prazo"}',
                         style: textTheme.labelSmall?.copyWith(color: muted),
                       ),
                     ],
@@ -132,8 +133,8 @@ class CardItem extends StatelessWidget {
           if (trailing != null) ...[const SizedBox(width: 10), trailing!],
           if (showCheckbox)
             Checkbox(
-              value: item.isSelected,
-              onChanged: (_) => item.onTap(item),
+              value: item.dataConclusao != null,
+              onChanged: (_) => /*item.onTap(item)*/ null,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),

@@ -84,7 +84,9 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
             ),
             const SizedBox(height: 6),
             Text(
-              widget.tarefa.trilhaNome,
+              // TODO: buscar nome da trilha a partir do ID
+              /*widget.tarefa.trilhaNome*/
+              "Trilha",
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.white.withAlpha((255 * 0.6).round()),
@@ -102,7 +104,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
               ),
             ),
             const SizedBox(height: 12),
-            TarefaDescriptionCard(descricao: widget.tarefa.descricao),
+            TarefaDescriptionCard(descricao: widget.tarefa.descricao ?? ""),
             const SizedBox(height: 24),
             StateButton(
               onPressed: _isSaved ? null : _handleSave,

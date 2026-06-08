@@ -61,7 +61,7 @@ class SkillUp extends StatelessWidget {
           '/home': (_) => const HomePage(
             userName: "Guylherme"
           ),
-          AuthRoutes.tarefas: (_) => const TarefaDetailPage(tarefa: TarefaDetail.mock),
+          AuthRoutes.tarefas: (_) => TarefaDetailPage(tarefa: TarefaDetail.mock),
         };
 
         final builder = routes[settings.name];

@@ -40,11 +40,14 @@ class _BlankTrilhasViewState extends State<BlankTrilhasView> {
     final name = _trilhaNomeController.text.trim();
     if (name.isEmpty) return;
 
-    await widget.onCreateTrilha(Trilha(
-      title: name,
-      subtitle: "",
-      duedate: DateTime.now(),
-    ));
+    await widget.onCreateTrilha(
+      Trilha(
+        title: name,
+        duedate: DateTime.now(),
+      )
+    );
+
+    if (!mounted) return;
 
     _trilhaNomeController.clear();
     setState(() => _isCreating = false);
@@ -56,7 +59,7 @@ class _BlankTrilhasViewState extends State<BlankTrilhasView> {
 
     final buttonLabel = _hasText ? 'CRIAR' : 'NOVA TRILHA';
     final buttonColor = _hasText ? stButton.createBackgroundColor : stButton.plainBackgroundColor;
-    final buttonIcon  = _hasText ? Icons.check : Icons.add;
+    final buttonIcon = _hasText ? Icons.check : Icons.add;
 
     return Scaffold(
       appBar: TopAppBar(),

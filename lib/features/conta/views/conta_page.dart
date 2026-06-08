@@ -4,7 +4,7 @@ import 'package:SkillUp/core/widgets/card_item.dart';
 import 'package:SkillUp/core/widgets/indicator.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
+import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -26,7 +26,7 @@ const _skills = [
   ),
 ];
 
-void _ignoreTap(ListItem item) {}
+void _ignoreTap(TarefaDetail item) {}
 
 class ContaPage extends StatelessWidget {
   const ContaPage({super.key});
@@ -136,7 +136,7 @@ class ContaPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Row(
-              children: const [
+              children: [
                 Expanded(
                   child: Indicator(
                     iconPath: 'assets/icons/goal_icon.svg',
@@ -221,10 +221,13 @@ class ContaPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   ..._skills.map(
                     (skill) => CardItem(
-                      item: ListItem(
-                        title: skill.title,
-                        subtitle: skill.goal,
-                        onTap: _ignoreTap,
+                      item: TarefaDetail(
+                        titulo: skill.title,
+                        trilhaId: skill.title,
+                        dataInicio: skill.dateTime,
+                        dataPrazo: skill.dateTime,
+                        metaRelacionada: skill.goal,
+                        descricao: "Descrição da tarefa.",
                       ),
                       backgroundColor: Colors.transparent,
                       borderRadius: 0,
@@ -267,4 +270,13 @@ class _SkillInfo {
   final String title;
   final String goal;
   final String date;
+
+  DateTime get dateTime {
+    final parts = date.split('/');
+    return DateTime(
+      int.parse(parts[2]),
+      int.parse(parts[1]),
+      int.parse(parts[0]),
+    );
+  }
 }

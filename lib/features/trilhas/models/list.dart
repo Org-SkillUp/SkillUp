@@ -1,20 +1,5 @@
-class ListItem {
-  ListItem({
-    required this.title,
-    required this.subtitle,
-    required this.onTap,
-    this.isSelected = false,
-    this.date,
-  });
+import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 
-  String title;
-  String subtitle;
-  void Function(ListItem) onTap;
-  bool isSelected;
-  String? date;
-}
-
-// TODO: atualizar para lista de tarefas.
 class ClassifiedList {
   ClassifiedList({
     this.classifier,
@@ -22,5 +7,5 @@ class ClassifiedList {
   });
 
   String? classifier;
-  List<ListItem> items;
+  List<TarefaDetail> items;
 }

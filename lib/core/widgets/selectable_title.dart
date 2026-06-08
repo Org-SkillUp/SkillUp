@@ -12,7 +12,6 @@ class SelectableTitle extends StatefulWidget {
     required this.selected,
     required this.onChanged,
     this.allowCreation = false,
-    this.onCreated,
     this.controller,
   });
 
@@ -23,7 +22,6 @@ class SelectableTitle extends StatefulWidget {
   final String selected;
   final ValueChanged<String> onChanged;
   final bool allowCreation;
-  final ValueChanged<String>? onCreated;
   final TextEditingController? controller;
 
   @override
@@ -68,7 +66,7 @@ class _SelectableTitleState extends State<SelectableTitle> {
         if (showTextField)
           TextFieldBuilder.buildTextField(
             hint: "Nome da Trilha",
-            fillColor: const Color(0xFF26364C),
+            fillColor: colorScheme.surface,
             controller: _controller,
           )
         else
@@ -77,8 +75,6 @@ class _SelectableTitleState extends State<SelectableTitle> {
             selected: widget.selected,
             selectedLabel: widget.selectedLabel,
             onChanged: widget.onChanged,
-            allowCreation: widget.allowCreation,
-            onCreated: widget.onCreated,
           ),
 
         if (widget.underLabel != null) ...[

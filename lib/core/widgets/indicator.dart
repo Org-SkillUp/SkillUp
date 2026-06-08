@@ -1,8 +1,9 @@
+import 'package:SkillUp/core/widgets/selectable_value.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class Indicator extends StatelessWidget {
-  const Indicator({
+  Indicator({
     super.key,
     required this.label,
     required this.value,
@@ -19,6 +20,9 @@ class Indicator extends StatelessWidget {
     this.borderRadius = 14,
     this.labelFontSize = 14,
     this.valueFontSize = 14,
+    this.onSelect,
+    this.selectOptions,
+    this.onDateSelect
   });
 
   final String label;
@@ -36,6 +40,11 @@ class Indicator extends StatelessWidget {
   final double borderRadius;
   final double labelFontSize;
   final double valueFontSize;
+  final ValueChanged<String>? onSelect;
+  final List<String>? selectOptions;
+  final VoidCallback? onDateSelect;
+
+  final GlobalKey _anchorKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +53,7 @@ class Indicator extends StatelessWidget {
     final muted = colorScheme.primary.withAlpha(153);
 
     return Container(
+      key: _anchorKey,
       height: height,
       width: width,
       padding: padding,
@@ -66,7 +76,7 @@ class Indicator extends StatelessWidget {
             textTheme: textTheme,
             fontSize: labelFontSize,
           ),
-          if (iconInValueRow) const Spacer() else const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           if (iconInValueRow) ...[
             Row(
@@ -78,7 +88,6 @@ class Indicator extends StatelessWidget {
                   backgroundColor: iconBackgroundColor,
                   size: 18,
                 ),
-                const Spacer(),
                 _IndicatorValue(
                   value: value,
                   valueColor: valueColor ?? colorScheme.primary,
@@ -87,16 +96,45 @@ class Indicator extends StatelessWidget {
                 ),
               ],
             ),
-          ] else
+          ] else if (onSelect != null) ...[
+            SelectableValue(
+              value: value,
+              valueColor: valueColor ?? colorScheme.primary,
+              textTheme: textTheme,
+              fontSize: valueFontSize,
+              selectOptions: selectOptions ?? [value],
+              onSelect: onSelect!,
+              anchorKey: _anchorKey,
+            ),
+          ] else if (onDateSelect != null) ...[
+            GestureDetector(
+              onTap: onDateSelect,
+              child: Row(
+                children: [
+                  _IndicatorValue(
+                    value: value,
+                    valueColor: valueColor ?? colorScheme.primary,
+                    textTheme: textTheme,
+                    fontSize: valueFontSize,
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(
+                    Icons.edit_outlined,
+                    size: 14,
+                    color: valueColor ?? colorScheme.primary,
+                  ),
+                ],
+              ),
+            ),
+          ] else ...[
             _IndicatorValue(
               value: value,
               valueColor: valueColor ?? colorScheme.primary,
               textTheme: textTheme,
               fontSize: valueFontSize,
             ),
-
-          const SizedBox(height: 8),
-        ]
+          ],
+        ],
       ),
     );
   }
