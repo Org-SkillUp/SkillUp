@@ -2,6 +2,8 @@ import 'package:SkillUp/core/utils/auth_email_validador.dart';
 import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
 import '../routes/auth_routes.dart';
 
 class LoginPage extends StatefulWidget {
@@ -66,8 +68,48 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         _showMessage('Erro ao fazer login: ${e.code}');
       }
-    } catch (e) {
+    } catch (_) {
       _showMessage('Erro inesperado ao fazer login.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final GoogleSignInAccount googleUser =
+          await GoogleSignIn.instance.authenticate();
+
+      final GoogleSignInAuthentication googleAuth =
+          googleUser.authentication;
+
+      final credential = GoogleAuthProvider.credential(
+        idToken: googleAuth.idToken,
+      );
+
+      await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AuthRoutes.home,
+          (route) => false,
+        );
+      }
+    } on GoogleSignInException catch (e) {
+      _showMessage('Erro no login Google: ${e.code.name}');
+    } on FirebaseAuthException catch (e) {
+      _showMessage('Erro no Firebase: ${e.code}');
+    } catch (_) {
+      _showMessage('Erro ao entrar com Google.');
     } finally {
       if (mounted) {
         setState(() {
@@ -201,6 +243,28 @@ class _LoginPageState extends State<LoginPage> {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: OutlinedButton(
+                  onPressed: _isLoading ? null : _loginWithGoogle,
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: const Text(
+                    'ENTRAR COM GOOGLE',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 12),
