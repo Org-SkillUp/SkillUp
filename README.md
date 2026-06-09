@@ -2,7 +2,7 @@
 
 # TODO: atualizar readme
 
-| **Membro** | **Tela e Funcionalidade** | **Link do Vídeo de Defesa**
+| **Membro** | **Tela e Funcionalidade** | **Link do Vídeo de Defesa** |
 |---|---|
 | Ádrian Smith de Almeida Meneses  | Tela de Conta | https://drive.google.com/drive/folders/11iJLZ-a0TnfDjKn7iJL15TnIKpvpur9K?usp=sharing |
 | Luiz Henrique Silva Fontes  | Tarefas |
