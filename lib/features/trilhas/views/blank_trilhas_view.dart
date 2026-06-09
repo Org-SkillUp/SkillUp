@@ -43,7 +43,6 @@ class _BlankTrilhasViewState extends State<BlankTrilhasView> {
     await widget.onCreateTrilha(
       Trilha(
         title: name,
-        duedate: DateTime.now(),
       )
     );
 

@@ -45,6 +45,11 @@ class TarefaDetail extends PersistenceModel implements ListItem {
   bool get isSelected => concluida;
 
   @override
+  set isSelected(bool boolState) {
+    isSelected = boolState;
+  }
+
+  @override
   DateTime? get date => dataPrazo;
 
   TarefaDetail copyWith({
