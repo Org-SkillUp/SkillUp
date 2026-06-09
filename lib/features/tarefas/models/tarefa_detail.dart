@@ -131,6 +131,7 @@ class TarefaDetail extends PersistenceModel implements ListItem {
     id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
     trilhaId: 'trilha-1',
+    trilhaNome: 'Administração de Empresas',
     dataInicio: DateTime(2026, 4, 18),
     dataPrazo: DateTime(2026, 4, 20),
     dataConclusao: DateTime(2026, 4, 20),

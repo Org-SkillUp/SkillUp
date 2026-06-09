@@ -1,4 +1,5 @@
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/validators/tarefa_date_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -24,6 +25,9 @@ class TarefaFormControllers {
   final TextEditingController dataConclusao;
   final TextEditingController meta;
   final TextEditingController descricao;
+
+  String? dataInicioErro;
+  String? dataPrazoErro;
 
   static final _fmt = DateFormat('dd/MM/yyyy');
 
@@ -53,6 +57,37 @@ class TarefaFormControllers {
     dataConclusao.text = _formatDate(tarefa.dataConclusao);
     meta.text = tarefa.metaRelacionada ?? '';
     descricao.text = tarefa.descricao ?? '';
+    limparErros();
+  }
+
+  void limparErros() {
+    dataInicioErro = null;
+    dataPrazoErro = null;
+  }
+
+  /// Valida os campos obrigatórios e retorna a primeira mensagem de erro.
+  String? validar() {
+    limparErros();
+
+    if (titulo.text.trim().isEmpty) {
+      return 'Informe ao menos o título da tarefa.';
+    }
+
+    dataInicioErro =
+        TarefaDateValidator.validate(dataInicio.text, campo: 'início');
+    if (dataInicioErro != null) return dataInicioErro;
+
+    dataPrazoErro = TarefaDateValidator.validate(dataPrazo.text, campo: 'prazo');
+    if (dataPrazoErro != null) return dataPrazoErro;
+
+    final inicio = TarefaDateValidator.parse(dataInicio.text)!;
+    final prazo = TarefaDateValidator.parse(dataPrazo.text)!;
+    if (prazo.isBefore(inicio)) {
+      dataPrazoErro = 'O prazo não pode ser anterior à data de início.';
+      return dataPrazoErro;
+    }
+
+    return null;
   }
 
   /// Monta um [TarefaDetail] a partir dos valores atuais dos campos.
@@ -74,11 +109,13 @@ class TarefaFormControllers {
       updatedBy: existente?.updatedBy,
       titulo: titulo.text.trim(),
       trilhaId: existente?.trilhaId ?? trilhaId,
+      trilhaNome: existente?.trilhaNome,
       dataInicio: _parseDate(dataInicio.text),
       dataPrazo: _parseDate(dataPrazo.text),
       dataConclusao: _parseDate(dataConclusao.text),
       metaRelacionada: meta.text.trim().isEmpty ? null : meta.text.trim(),
       descricao: descricao.text.trim().isEmpty ? null : descricao.text.trim(),
+      concluida: existente?.concluida ?? false,
     );
   }
 

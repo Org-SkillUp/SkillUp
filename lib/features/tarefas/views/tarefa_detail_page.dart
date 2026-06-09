@@ -85,6 +85,13 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
   }
 
   Future<void> _saveEdit() async {
+    final erro = _controllers.validar();
+    if (erro != null) {
+      setState(() {});
+      _showSnackBar(erro, erro: true);
+      return;
+    }
+
     // Preserva o id atual para que o Firestore atualize a tarefa certa,
     // em vez de criar uma nova.
     final atualizada = _controllers.toTarefa(trilhaId: _tarefa.trilhaId, existente: _tarefa);
