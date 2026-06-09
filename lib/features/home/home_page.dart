@@ -1,3 +1,4 @@
+import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/progress_card.dart';
 import 'package:SkillUp/core/widgets/warning_card.dart';
@@ -22,6 +23,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late List<ClassifiedList> homeTasks;
 
+  int trilhasConcluidas = 0;
+  int totalTrilhas = 0;
+
   @override
   void initState() {
     super.initState();
@@ -29,20 +33,40 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _toggleSelected(ListItem item) {
-    item.isSelected = !item.isSelected;
+    setState(() {
+      item.isSelected = !item.isSelected;
+    });
   }
 
   void _loadTasks() {
+    totalTrilhas = 5;
+    trilhasConcluidas = 2;
+
     homeTasks = [
       ClassifiedList(
         classifier: "Hoje",
-        items: [],
+        items: [
+          ListItem(
+            title: "Estudar Fluxo de Caixa",
+            subtitle: "Administração de Empresas",
+            date: DateTime(2026, 4, 20),
+            isSelected: false,
+            onTap: _toggleSelected,
+          ),
+          ListItem(
+            title: "Elaborar Plano de Marketing",
+            subtitle: "Marketing",
+            date: DateTime(2026, 4, 23),
+            isSelected: false,
+            onTap: _toggleSelected,
+          ),
+        ],
       ),
     ];
   }
 
   Widget _buildWarningsSection() {
-    return const Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -54,7 +78,9 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         SizedBox(height: 12),
-        WarningBanner(),
+        WarningBanner(
+          tarefasHoje: 3, 
+        ),
       ],
     );
   }
@@ -77,12 +103,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SkillUp'),
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
+      appBar: TopAppBar(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -91,7 +112,10 @@ class _HomePageState extends State<HomePage> {
             children: [
               HomeHeader(userName: widget.userName),
               const SizedBox(height: 24),
-              const ProgressCard(),
+              ProgressCard(
+                trilhasConcluidas: trilhasConcluidas,
+                totalTrilhas: totalTrilhas,
+              ),
               const SizedBox(height: 20),
               _buildWarningsSection(),
               const SizedBox(height: 24),

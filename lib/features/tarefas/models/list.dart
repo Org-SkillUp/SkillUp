@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
 
-abstract interface class ListItem {
-  String get title;
-  String? get subtitle;
-  bool get isSelected;
-  set isSelected(bool boolState) {
-    isSelected = boolState;
-  }
-  DateTime? get date;
-  VoidCallback? get onOpen;
-  VoidCallback? get onTap;
+class ListItem {
+  final String title;
+  final String? subtitle;
+  final DateTime? date;
+  bool isSelected;
+  VoidCallback? onOpen;
+  void Function(ListItem)? onTap;
+
+  ListItem({
+    required this.title,
+    this.subtitle,
+    this.date,
+    this.isSelected = false,
+    this.onOpen,
+    this.onTap,
+  });
+
+  bool? get concluida => null;
 }
 
 class ClassifiedList {
