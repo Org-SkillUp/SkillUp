@@ -380,28 +380,7 @@ class _ContaContent extends StatelessWidget {
   }
 }
 
-class _ContaSkillItem implements ListItem {
-  _ContaSkillItem({required this.title, required String goal})
-    : subtitle = 'Meta: $goal';
-
-  @override
-  final String title;
-
-  @override
-  final String? subtitle;
-
-  @override
-  DateTime? get date => null;
-
-  @override
-  bool get isSelected => false;
-
-  @override
-  set isSelected(bool boolState) {}
-
-  @override
-  VoidCallback? get onOpen => _ignoreTap;
-
-  @override
-  VoidCallback? get onTap => _ignoreTap;
+class _ContaSkillItem extends ListItem {
+  _ContaSkillItem({required super.title, required String goal})
+    : super(subtitle: 'Meta: $goal', onOpen: _ignoreTap);
 }
