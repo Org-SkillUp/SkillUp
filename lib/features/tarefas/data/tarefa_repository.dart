@@ -16,6 +16,7 @@ class TarefaRepository {
     fromMap: TarefaDetail.fromMap,
   );
 
+
   Stream<List<TarefaDetail>> observarTarefas() => _service.readList();
 
   Future<void> adicionar(TarefaDetail tarefa) => _service.create(tarefa);

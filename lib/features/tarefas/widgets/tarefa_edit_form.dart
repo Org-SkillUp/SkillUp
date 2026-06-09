@@ -1,4 +1,3 @@
-import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/features/tarefas/controllers/tarefa_form_controllers.dart';
 import 'package:SkillUp/features/tarefas/validators/tarefa_date_validator.dart';
 import 'package:SkillUp/features/tarefas/widgets/tarefa_text_field.dart';
@@ -32,25 +31,6 @@ class _TarefaEditFormState extends State<TarefaEditForm> {
           label: 'Título',
           hint: 'Nome da tarefa',
         ),
-        const SizedBox(height: 16),
-        SelectableTitle(
-          label: 'Trilha',
-          options: _controllers.trilhaOpcoes,
-          selected: _controllers.trilhaSelecionada,
-          onChanged: (value) {
-            setState(() => _controllers.setTrilha(value));
-          },
-        ),
-        if (_controllers.trilhaErro != null) ...[
-          const SizedBox(height: 6),
-          Text(
-            _controllers.trilhaErro!,
-            style: const TextStyle(
-              color: Color(0xFFCF8080),
-              fontSize: 12,
-            ),
-          ),
-        ],
         const SizedBox(height: 16),
         TarefaTextField(
           controller: _controllers.dataInicio,

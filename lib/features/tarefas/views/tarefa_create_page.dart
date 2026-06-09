@@ -2,10 +2,10 @@ import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/tarefas/data/tarefa_repository.dart';
 import 'package:SkillUp/features/tarefas/controllers/tarefa_form_controllers.dart';
 import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
-import 'package:SkillUp/features/tarefas/routes/tarefas_routes.dart';
 import 'package:SkillUp/features/tarefas/widgets/tarefa_edit_form.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +15,12 @@ import 'package:flutter/material.dart';
 /// o mesmo formulário ([TarefaEditForm]) e a mesma estrutura visual
 /// (barras superior/inferior e botão "Voltar para Trilha").
 class TarefaCreatePage extends StatefulWidget {
-  const TarefaCreatePage({super.key});
+  const TarefaCreatePage({
+    super.key,
+    this.trilhaId,
+  });
+
+  final String? trilhaId;
 
   @override
   State<TarefaCreatePage> createState() => _TarefaCreatePageState();
@@ -63,11 +68,11 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
 
     try {
       // Grava a nova tarefa no Firestore (o id do documento é gerado lá).
-      await TarefaRepository.instance.adicionar(_controllers.toTarefa());
+      await TarefaRepository.instance.adicionar(_controllers.toTarefa(trilhaId: widget.trilhaId!));
 
       // Após o await, o context só pode ser usado se a tela ainda existe.
       if (!mounted) return;
-      TarefasNavigation.goToTrilhas(context);
+      TarefasNavigation.goToTrilhas(context, widget.trilhaId!);
     } catch (_) {
       if (!mounted) return;
       _showErrorSnackBar('Não foi possível salvar a tarefa. Tente novamente.');
@@ -85,7 +90,7 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
           padding: const EdgeInsets.all(16),
           children: [
             TextButton.icon(
-              onPressed: () => TarefasNavigation.goToTrilhas(context),
+              onPressed: () => TarefasNavigation.goToTrilhas(context, widget.trilhaId!),
               style: TextButton.styleFrom(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.zero,
@@ -124,7 +129,7 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
             ),
             const SizedBox(height: 16),
             StateButton(
-              onPressed: () => TarefasNavigation.goToTrilhas(context),
+              onPressed: () => TarefasNavigation.goToTrilhas(context, widget.trilhaId!),
               label: Text(
                 'CANCELAR',
                 style: TextStyle(
@@ -141,7 +146,7 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
         ),
       ),
       bottomNavigationBar: BotAppBar(
-        selectedPage: TarefasRoutes.trilhas,
+        selectedPage: AuthRoutes.trilhas,
       ),
     );
   }

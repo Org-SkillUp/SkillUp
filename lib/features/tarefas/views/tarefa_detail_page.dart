@@ -2,10 +2,10 @@ import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
+import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/tarefas/controllers/tarefa_form_controllers.dart';
 import 'package:SkillUp/features/tarefas/data/tarefa_repository.dart';
 import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
-import 'package:SkillUp/features/tarefas/routes/tarefas_routes.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:SkillUp/features/tarefas/widgets/tarefa_description_card.dart';
 import 'package:SkillUp/features/tarefas/widgets/tarefa_edit_form.dart';
@@ -94,7 +94,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
 
     // Preserva o id atual para que o Firestore atualize a tarefa certa,
     // em vez de criar uma nova.
-    final atualizada = _controllers.toTarefa(existente: _tarefa);
+    final atualizada = _controllers.toTarefa(trilhaId: _tarefa.trilhaId, existente: _tarefa);
 
     try {
       await TarefaRepository.instance.atualizar(atualizada);
@@ -151,7 +151,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
       await TarefaRepository.instance.remover(id);
 
       if (!mounted) return;
-      TarefasNavigation.goToTrilhas(context);
+      TarefasNavigation.goToTrilhas(context, widget.tarefa.trilhaId);
     } catch (_) {
       if (!mounted) return;
       _showSnackBar(
@@ -172,7 +172,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
           padding: const EdgeInsets.all(16),
           children: [
             TextButton.icon(
-              onPressed: () => TarefasNavigation.goToTrilhas(context),
+              onPressed: () => TarefasNavigation.goToTrilhas(context, widget.tarefa.trilhaId),
               style: TextButton.styleFrom(
                 alignment: Alignment.centerLeft,
                 padding: EdgeInsets.zero,
@@ -194,7 +194,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
         ),
       ),
       bottomNavigationBar: BotAppBar(
-        selectedPage: TarefasRoutes.trilhas,
+        selectedPage: AuthRoutes.trilhas,
       ),
     );
   }
@@ -229,7 +229,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _tarefa.trilhaNome,
+                    _tarefa.trilhaNome ?? _tarefa.trilhaId,
                     style: TextStyle(
                       fontSize: 14,
                       color: Colors.white.withAlpha((255 * 0.6).round()),
@@ -258,7 +258,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
           ),
         ),
         const SizedBox(height: 12),
-        TarefaDescriptionCard(descricao: _tarefa.descricao),
+        TarefaDescriptionCard(descricao: _tarefa.descricao ?? ''),
         const SizedBox(height: 24),
         StateButton(
           onPressed: _isSaved ? null : _handleSave,
@@ -275,7 +275,7 @@ class _TarefaDetailPageState extends State<TarefaDetailPage> {
         ),
         const SizedBox(height: 16),
         StateButton(
-          onPressed: () => TarefasNavigation.goToTrilhas(context),
+          onPressed: () => TarefasNavigation.goToTrilhas(context, widget.tarefa.trilhaId),
           label: Text(
             'CONCLUIR',
             style: TextStyle(

@@ -1,27 +1,54 @@
 import 'package:SkillUp/core/models/persistence_model.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-/// Dados exibidos na tela de detalhe de uma tarefa.
-class TarefaDetail extends PersistenceModel {
-  const TarefaDetail({
+class TarefaDetail extends PersistenceModel implements ListItem {
+  TarefaDetail({
     super.id,
     super.createdAt,
     super.updatedAt,
     super.createdBy,
     super.updatedBy,
     required this.titulo,
-    required this.trilhaNome,
-    required this.dataInicio,
-    required this.dataPrazo,
-    required this.metaRelacionada,
-    required this.descricao,
+    required this.trilhaId,
+    this.trilhaNome,
+    this.dataInicio,
+    this.dataPrazo,
+    this.dataConclusao,
+    this.metaRelacionada,
+    this.descricao,
+    this.concluida = false,
+    this.onOpen,
+    this.onTap
   });
 
   final String titulo;
-  final String trilhaNome;
-  final String dataInicio;
-  final String dataPrazo;
-  final String metaRelacionada;
-  final String descricao;
+  final String trilhaId;
+  final String? trilhaNome;
+  DateTime? dataInicio;
+  DateTime? dataPrazo;
+  DateTime? dataConclusao;
+  String? metaRelacionada;
+  String? descricao;
+  bool concluida;
+  final VoidCallback? onOpen;
+  final VoidCallback? onTap;
+
+  @override
+  String get title => titulo;
+
+  @override
+  String? get subtitle => "Meta: ${metaRelacionada ?? "Não Definida"} ";
+
+  @override
+  bool get isSelected => concluida;
+
+  @override
+  set isSelected(bool boolState) {}
+
+  @override
+  DateTime? get date => dataPrazo;
 
   TarefaDetail copyWith({
     String? id,
@@ -30,11 +57,16 @@ class TarefaDetail extends PersistenceModel {
     String? createdBy,
     String? updatedBy,
     String? titulo,
+    String? trilhaId,
     String? trilhaNome,
-    String? dataInicio,
-    String? dataPrazo,
+    DateTime? dataInicio,
+    DateTime? dataPrazo,
+    DateTime? dataConclusao,
     String? metaRelacionada,
     String? descricao,
+    bool? concluida,
+    VoidCallback? onOpen,
+    VoidCallback? onTap
   }) {
     return TarefaDetail(
       id: id ?? this.id,
@@ -43,11 +75,16 @@ class TarefaDetail extends PersistenceModel {
       createdBy: createdBy ?? this.createdBy,
       updatedBy: updatedBy ?? this.updatedBy,
       titulo: titulo ?? this.titulo,
+      trilhaId: trilhaId ?? this.trilhaId,
       trilhaNome: trilhaNome ?? this.trilhaNome,
       dataInicio: dataInicio ?? this.dataInicio,
       dataPrazo: dataPrazo ?? this.dataPrazo,
+      dataConclusao: dataConclusao ?? this.dataConclusao,
       metaRelacionada: metaRelacionada ?? this.metaRelacionada,
       descricao: descricao ?? this.descricao,
+      concluida: concluida ?? this.concluida,
+      onOpen: onOpen ?? this.onOpen,
+      onTap: onTap ?? this.onTap
     );
   }
 
@@ -55,15 +92,16 @@ class TarefaDetail extends PersistenceModel {
   Map<String, dynamic> toMap() {
     return {
       'titulo': titulo,
-      'trilhaNome': trilhaNome,
-      'dataInicio': dataInicio,
-      'dataPrazo': dataPrazo,
+      'trilhaId': trilhaId,
+      'dataInicio': dataInicio != null ? Timestamp.fromDate(dataInicio!) : null,
+      'dataPrazo': dataPrazo != null ? Timestamp.fromDate(dataPrazo!) : null,
+      'dataConclusao': dataConclusao != null ? Timestamp.fromDate(dataConclusao!) : null,
       'metaRelacionada': metaRelacionada,
       'descricao': descricao,
+      'concluida': concluida,
     };
   }
 
-  /// Reconstrói a tarefa a partir do documento Firestore.
   factory TarefaDetail.fromMap(Map<String, dynamic> map, String id) {
     return TarefaDetail(
       id: id,
@@ -71,21 +109,32 @@ class TarefaDetail extends PersistenceModel {
       updatedAt: PersistenceModel.parseTimestamp(map['updatedAt']),
       createdBy: map['createdBy'] as String?,
       updatedBy: map['updatedBy'] as String?,
-      titulo: (map['titulo'] ?? '') as String,
-      trilhaNome: (map['trilhaNome'] ?? '') as String,
-      dataInicio: (map['dataInicio'] ?? '') as String,
-      dataPrazo: (map['dataPrazo'] ?? '') as String,
-      metaRelacionada: (map['metaRelacionada'] ?? '') as String,
-      descricao: (map['descricao'] ?? '') as String,
+      titulo: map['titulo'] ?? '',
+      trilhaId: map['trilhaId'] ?? '',
+      dataInicio: _parseDate(map['dataInicio']),
+      dataPrazo: _parseDate(map['dataPrazo']),
+      dataConclusao: _parseDate(map['dataConclusao']),
+      metaRelacionada: map['metaRelacionada'] as String?,
+      descricao: map['descricao'] as String?,
+      concluida: map['concluida'] as bool? ?? false,
     );
   }
 
-  static const mock = TarefaDetail(
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  static final mock = TarefaDetail(
     id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
+    trilhaId: 'trilha-1',
     trilhaNome: 'Administração de Empresas',
-    dataInicio: '18/04/2026',
-    dataPrazo: '20/04/2026',
+    dataInicio: DateTime(2026, 4, 18),
+    dataPrazo: DateTime(2026, 4, 20),
+    dataConclusao: DateTime(2026, 4, 20),
     metaRelacionada: 'Prova administração financeira',
     descricao:
         'Leitura do material didático sobre gestão de tesouraria e resolução '

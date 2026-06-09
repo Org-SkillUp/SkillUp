@@ -1,6 +1,7 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:SkillUp/core/theme/nav_button_theme.dart';
 import 'package:SkillUp/core/theme/state_button_theme.dart';
+import 'package:SkillUp/core/theme/status_theme.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -40,6 +41,7 @@ class AppTheme {
         inactiveTextColor: Color(0x99FFFFFF),
       ),
       StateButtonTheme(
+        createBackgroundColor: Color.fromARGB(255, 90, 154, 122),
         plainBackgroundColor: Color(0xFF5A969A),
         plainLabelColor: Color(0xFFFFFFFF),
         plainBorderColor: Colors.transparent,
@@ -54,6 +56,13 @@ class AppTheme {
         bodyColor: Color.fromARGB(153, 255, 255, 255),
         labelColor: Colors.white,
         backgroundColor: Color(0xFF344256)
+      ),
+      StatusTheme(
+        activeColor: Color.fromARGB(255, 150, 208, 255), 
+        pausedColor: Color(0xFFCFB680), 
+        completedColor: Color.fromARGB(255, 166, 255, 169), 
+        canceledColor: Color.fromARGB(255, 255, 166, 160), 
+        pendingColor: Color.fromARGB(255, 204, 204, 204)
       )
     ],
   );

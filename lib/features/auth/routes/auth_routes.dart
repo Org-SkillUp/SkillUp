@@ -6,4 +6,5 @@ class AuthRoutes {
   static const String trilhas = '/trilhas';
   static const String conta = '/conta';
   static const String tarefas = '/tarefas-detalhe';
+  static const String criar = '/tarefa-criar';
 }
