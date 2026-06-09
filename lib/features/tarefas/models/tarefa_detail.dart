@@ -33,7 +33,9 @@ class TarefaDetail extends PersistenceModel implements ListItem {
   String? descricao;
   bool concluida;
   final VoidCallback? onOpen;
-  final VoidCallback? onTap;
+
+  @override
+  final void Function(ListItem)? onTap;
 
   @override
   String get title => titulo;
@@ -66,7 +68,7 @@ class TarefaDetail extends PersistenceModel implements ListItem {
     String? descricao,
     bool? concluida,
     VoidCallback? onOpen,
-    VoidCallback? onTap
+    void Function(ListItem)? onTap
   }) {
     return TarefaDetail(
       id: id ?? this.id,
@@ -141,4 +143,14 @@ class TarefaDetail extends PersistenceModel implements ListItem {
         'dos 5 exercícios práticos de projeção financeira da Unidade 2. '
         'Prazo final para envio do relatório de progresso: 20/04/2026.',
   );
+  
+  @override
+  set onOpen(VoidCallback? value) {
+    // TODO: implement onOpen
+  }
+  
+  @override
+  set onTap(void Function(ListItem)? value) {
+    // TODO: implement onTap
+  }
 }
