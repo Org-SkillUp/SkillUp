@@ -1,10 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Campos de auditoria compartilhados por entidades persistidas no Firestore.
-///
-/// O [FirestoreService] grava `createdBy`, `createdAt` e `updatedAt` na
-/// criação, e `updatedBy` + `updatedAt` na atualização — junto com o
-/// retorno de [toMap] de cada modelo concreto.
 abstract class PersistenceModel {
   final String? id;
   final DateTime? createdAt;
@@ -20,10 +15,8 @@ abstract class PersistenceModel {
     this.updatedBy,
   });
 
-  /// Dados de negócio do documento (sem metadados de auditoria).
   Map<String, dynamic> toMap();
 
-  /// Converte valores vindos do Firestore (`Timestamp` ou `DateTime`).
   static DateTime? parseTimestamp(dynamic value) {
     if (value == null) return null;
     if (value is Timestamp) return value.toDate();

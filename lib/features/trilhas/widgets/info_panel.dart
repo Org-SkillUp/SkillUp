@@ -1,11 +1,9 @@
-import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:SkillUp/core/theme/status_theme.dart';
 import 'package:SkillUp/core/widgets/date_indicator_wrapper.dart';
-import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:SkillUp/core/widgets/indicator.dart';
-import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:SkillUp/features/trilhas/viewmodels/trilha_view_model.dart';
+import 'package:SkillUp/features/trilhas/widgets/creation_buttons.dart';
 import 'package:flutter/material.dart';
 
 class InfoPanel extends StatelessWidget {
@@ -31,12 +29,8 @@ class InfoPanel extends StatelessWidget {
     };
   }
 
-  bool get _showButtons => selected.startedAt != null;
-
   @override
   Widget build(BuildContext context) {
-    final stButton = Theme.of(context).extension<StateButtonTheme>()!;
-    final colorScheme = Theme.of(context).colorScheme;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,80 +68,11 @@ class InfoPanel extends StatelessWidget {
                   },
                 ),
 
-                if (_showButtons) ...[
-                  const SizedBox(height: 12),
-
-                  StateButton(
-                    onPressed: vm.togglePause,
-                    label: Text(
-                      vm.isPaused ? 'RETOMAR' : 'PAUSAR',
-                      style: TextStyle(
-                        color: stButton.outlinedYellowHighlighColor,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Arimo',
-                        fontSize: 16,
-                      ),
-                    ),
-                    bgColor: stButton.outlinedBackgroundColor,
-                    borderColor: stButton.outlinedYellowHighlighColor,
-                    borderRadius: 14,
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  if (vm.isCreating) ...[
-                    Row(
-                      children: [
-                        SizedBox(
-                          width: 48,
-                          height: 48,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              await vm.createTrilha(trilhaNomeController.text);
-                              trilhaNomeController.clear();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: stButton.plainBackgroundColor,
-                              padding: EdgeInsets.zero,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              elevation: 0,
-                            ),
-                            child: Icon(
-                              Icons.check,
-                              color: stButton.plainLabelColor,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: TextFieldBuilder.buildTextField(
-                            hint: "Nome da Trilha",
-                            fillColor: colorScheme.surface,
-                            controller: trilhaNomeController,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-
-                  StateButton(
-                    onPressed: () => vm.setCreating(true),
-                    label: Text(
-                      'NOVA TRILHA',
-                      style: TextStyle(
-                        color: stButton.plainLabelColor,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Arimo',
-                        fontSize: 16,
-                      ),
-                    ),
-                    bgColor: stButton.plainBackgroundColor,
-                    borderRadius: 16,
-                    icon: Icon(Icons.add, color: stButton.plainLabelColor),
+                if (vm.showButtonsInPanel) ...[
+                  CreationButtons(
+                    selected: selected, 
+                    vm: vm, 
+                    trilhaNomeController: trilhaNomeController
                   ),
                 ],
               ],

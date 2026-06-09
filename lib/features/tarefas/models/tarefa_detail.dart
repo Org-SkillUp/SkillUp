@@ -39,15 +39,13 @@ class TarefaDetail extends PersistenceModel implements ListItem {
   String get title => titulo;
 
   @override
-  String? get subtitle => "Meta: $metaRelacionada";
+  String? get subtitle => "Meta: ${metaRelacionada ?? "Não Definida"} ";
 
   @override
   bool get isSelected => concluida;
 
   @override
-  set isSelected(bool boolState) {
-    isSelected = boolState;
-  }
+  set isSelected(bool boolState) {}
 
   @override
   DateTime? get date => dataPrazo;

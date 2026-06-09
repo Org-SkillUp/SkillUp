@@ -86,7 +86,7 @@ class Indicator extends StatelessWidget {
                   iconPath: iconPath,
                   color: iconColor ?? muted,
                   backgroundColor: iconBackgroundColor,
-                  size: 18,
+                  size: 20,
                 ),
                 _IndicatorValue(
                   value: value,
@@ -183,7 +183,7 @@ class _IndicatorLabel extends StatelessWidget {
               iconPath: iconPath,
               color: iconColor,
               backgroundColor: null,
-              size: 12,
+              size: 16,
             ),
           const SizedBox(width: 8),
         ],

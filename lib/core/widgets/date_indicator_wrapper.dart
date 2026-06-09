@@ -96,7 +96,7 @@ class _DateIndicatorWrapperState extends State<DateIndicatorWrapper> {
           if (_showFinish) ...[
             const SizedBox(height: 12),
             Indicator(
-              icon: Icons.check_circle_outline,
+              icon: Icons.check,
               label: 'Conclusão',
               value: trilha.finishedAt == null
                   ? 'Quando concluir'

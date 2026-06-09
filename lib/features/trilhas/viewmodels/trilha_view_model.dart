@@ -16,6 +16,7 @@ class TrilhasViewModel extends ChangeNotifier {
   List<Trilha> _trilhas = [];
   Trilha? _selected;
   bool _isCreating = false;
+  String? _transitionError;
   void Function(TarefaDetail)? _onOpenTarefa;
 
   Trilha? _selectedCache;
@@ -23,7 +24,9 @@ class TrilhasViewModel extends ChangeNotifier {
 
   List<Trilha> get trilhas => _trilhas;
   bool get isCreating => _isCreating;
+  bool get showButtonsInPanel => selected?.duedate != null || (selected?.duedate == null && selected?.startedAt != null);
   bool get isPaused => _selected?.status == TrilhaStatus.paused;
+  String? get transitionError => _transitionError;
   Stream<List<Trilha>> get trilhasStream => _service.readListByUser(userEmail);
 
   Trilha? get selected {
@@ -58,12 +61,10 @@ class TrilhasViewModel extends ChangeNotifier {
 
   void setNavigationCallback(void Function(TarefaDetail) callback) {
     _onOpenTarefa = callback;
-    // invalida o cache para reinjetar o novo callback
     _selectedCache = null;
     _selectedRaw = null;
   }
 
-  // toggle por id — não depende da instância capturada pelo closure
   Future<void> _toggleTaskById(String? taskId, bool atualConcluida) async {
     if (taskId == null || _selected == null) return;
 
@@ -159,12 +160,106 @@ class TrilhasViewModel extends ChangeNotifier {
 
   Future<void> deleteTrilha(String id) => _service.delete(id);
 
+  String? _validateTransition(TrilhaStatus de, TrilhaStatus para) {
+    if (!de.canTransitionTo(para)) {
+      return switch ((de, para)) {
+        (TrilhaStatus.pending, TrilhaStatus.paused) =>
+          'Não é possível pausar uma trilha pendente.',
+        (TrilhaStatus.completed, TrilhaStatus.paused) =>
+          'Não é possível pausar uma trilha concluída.',
+        (TrilhaStatus.paused, TrilhaStatus.completed) =>
+          'Não é possível concluir uma trilha pausada.',
+        _ => 'Transição não permitida.',
+      };
+    }
+    return null;
+  }
+
+  Trilha? _applyTransition(Trilha trilha, TrilhaStatus newStatus) {
+    final erro = _validateTransition(trilha.status, newStatus);
+    if (erro != null) {
+      _transitionError = erro;
+      notifyListeners();
+      return null;
+    }
+
+    _transitionError = null;
+    final now = DateTime.now();
+
+    return switch ((trilha.status, newStatus)) {
+      (TrilhaStatus.pending, TrilhaStatus.active) => trilha.copyWith(
+        status: newStatus,
+        startedAt: now,
+      ),
+      (TrilhaStatus.pending, TrilhaStatus.completed) => trilha.copyWith(
+        status: newStatus,
+        startedAt: now,
+        finishedAt: now,
+      ),
+      (TrilhaStatus.active, TrilhaStatus.pending) => trilha.copyWith(
+        status: newStatus,
+        startedAt: null,
+        finishedAt: null,
+      ),
+      (TrilhaStatus.active, TrilhaStatus.completed) => trilha.copyWith(
+        status: newStatus,
+        finishedAt: now,
+      ),
+      (TrilhaStatus.active, TrilhaStatus.paused) => trilha.copyWith(
+        status: newStatus,
+        pausedAt: now,
+      ),
+      (TrilhaStatus.completed, TrilhaStatus.pending) => trilha.copyWith(
+        status: newStatus,
+        startedAt: null,
+        finishedAt: null,
+      ),
+      (TrilhaStatus.completed, TrilhaStatus.active) => trilha.copyWith(
+        status: newStatus,
+        finishedAt: null,
+      ),
+      (TrilhaStatus.paused, TrilhaStatus.pending) => trilha.copyWith(
+          status: newStatus,
+          startedAt: null,
+          finishedAt: null,
+          pausedAt: null,
+          resumedAt: null,
+        ),
+      (TrilhaStatus.paused, TrilhaStatus.active) => trilha.copyWith(
+        status: newStatus,
+        resumedAt: now,
+      ),
+      _ => trilha.copyWith(status: newStatus),
+    };
+  }
+
+  Future<void> updateStatus(TrilhaStatus newStatus) async {
+    if (_selected == null) return;
+
+    final updated = _applyTransition(_selected!, newStatus);
+    if (updated == null) return;
+
+    _selected = updated;
+    _sync();
+
+    await _service.updateByMap(_selected!.id!, {
+      'status': updated.status.name,
+      'startedAt': updated.startedAt != null
+        ? Timestamp.fromDate(updated.startedAt!) : null,
+      'finishedAt': updated.finishedAt != null
+        ? Timestamp.fromDate(updated.finishedAt!) : null,
+      'pausedAt': updated.pausedAt != null
+        ? Timestamp.fromDate(updated.pausedAt!) : null,
+      'resumedAt': updated.resumedAt != null
+        ? Timestamp.fromDate(updated.resumedAt!) : null,
+      'updatedAt': FieldValue.serverTimestamp(),
+      'updatedBy': FirebaseAuth.instance.currentUser?.email,
+    });
+  }
+
   Future<void> togglePause() async {
     if (_selected == null) return;
-    final novoStatus = isPaused ? TrilhaStatus.active : TrilhaStatus.paused;
-    _selected = _selected!.copyWith(status: novoStatus);
-    _sync();
-    await _service.updateStatus(_selected!.id!, novoStatus);
+    await updateStatus(isPaused ? TrilhaStatus.active : TrilhaStatus.paused);
   }
 
   Future<void> updateStartDate(DateTime date) async {
@@ -186,27 +281,6 @@ class TrilhasViewModel extends ChangeNotifier {
     _selected = _selected!.copyWith(finishedAt: date);
     _sync();
     await _service.updateDateField(_selected!.id!, 'finishedAt', date);
-  }
-
-  Future<void> updateStatus(TrilhaStatus novoStatus) async {
-    if (_selected == null) return;
-
-    final startedAt = novoStatus == TrilhaStatus.active && _selected!.startedAt == null
-        ? DateTime.now() : _selected!.startedAt;
-
-    final finishedAt = novoStatus == TrilhaStatus.completed && _selected!.finishedAt == null
-        ? DateTime.now() : _selected!.finishedAt;
-
-    _selected = _selected!.copyWith(
-      status: novoStatus,
-      startedAt: startedAt,
-      finishedAt: finishedAt,
-    );
-    _sync();
-
-    await _service.updateStatus(_selected!.id!, novoStatus);
-    if (startedAt != null) await _service.updateDateField(_selected!.id!, 'startedAt', startedAt);
-    if (finishedAt != null) await _service.updateDateField(_selected!.id!, 'finishedAt', finishedAt);
   }
 
   void _sync() {

@@ -12,12 +12,76 @@ class TrilhasService extends FirestoreService<Trilha> {
     fromMap: Trilha.fromMap,
   );
 
+  final Map<String, String> _titlesCache = {};
+
+  Stream<List<Trilha>> readListByUser(String email) {
+    final trilhasStream = firestore
+      .collection(collection)
+      .where('createdBy', isEqualTo: email)
+      .snapshots()
+      .map((s) {
+        final trilhas = s.docs.map((d) => fromMap(d.data(), d.id)).toList();
+        for (final t in trilhas) {
+          if (t.id != null) _titlesCache[t.id!] = t.title;
+        }
+        return trilhas;
+      });
+
+    final tarefasStream = firestore
+      .collection('tarefas')
+      .where('createdBy', isEqualTo: email)
+      .snapshots()
+      .map((s) => s.docs.map((d) => TarefaDetail.fromMap(d.data(), d.id)).toList());
+
+    return Rx.combineLatest2(
+      trilhasStream,
+      tarefasStream,
+      (List<Trilha> trilhas, List<TarefaDetail> tarefas) =>
+        _merge(trilhas, tarefas),
+    );
+  }
+
+  List<Trilha> _merge(List<Trilha> trilhas, List<TarefaDetail> tarefas) {
+    final Map<String, Map<String, List<TarefaDetail>>> grouped = {};
+    final Map<String, String> metaLabels = {};
+
+    for (final tarefa in tarefas) {
+      final trilhaId = tarefa.trilhaId;
+      final metaNorm = (tarefa.metaRelacionada ?? '').toUpperCase();
+      final metaLabel = tarefa.metaRelacionada ?? '';
+
+      metaLabels[metaNorm] = metaLabel;
+
+      grouped
+          .putIfAbsent(trilhaId, () => {})
+          .putIfAbsent(metaNorm, () => [])
+          .add(tarefa);
+    }
+
+    return trilhas.map((trilha) {
+      final byMeta = grouped[trilha.id] ?? {};
+
+      final classifiedLists = byMeta.entries.map((entry) {
+        return ClassifiedList(
+          classifier: metaLabels[entry.key]?.toUpperCase() ?? entry.key,
+          items: entry.value,
+        );
+      }).toList();
+
+      return trilha.copyWith(tarefas: classifiedLists);
+    }).toList();
+  }
+
   Future<void> createTarefa(TarefaDetail tarefa) async {
     await firestore.collection('tarefas').add({
       ...tarefa.toMap(),
       'createdAt': FieldValue.serverTimestamp(),
-      'createdBy': FirebaseAuth.instance.currentUser?.email,
+      'createdBy': FirebaseAuth.instance.currentUser?.email ?? 'unknown',
     });
+  }
+
+  Future<void> updateTarefa(String id, Map<String, dynamic> fields) async {
+    await firestore.collection('tarefas').doc(id).update(fields);
   }
 
   Future<void> updateStatus(String id, TrilhaStatus status) async {
@@ -36,53 +100,11 @@ class TrilhasService extends FirestoreService<Trilha> {
     });
   }
 
-  Stream<List<Trilha>> readListByUser(String email) {
-    final trilhasStream = firestore
-        .collection(collection)
-        .where('createdBy', isEqualTo: email)
-        .snapshots()
-        .map((s) => s.docs.map((d) => fromMap(d.data(), d.id)).toList());
-
-    return trilhasStream.switchMap((trilhas) {
-      if (trilhas.isEmpty) return Stream.value([]);
-
-      final enrichedStreams = trilhas.map((trilha) {
-        return firestore
-          .collection('tarefas')
-          .where('trilhaId', isEqualTo: trilha.id)
-          .snapshots()
-          .map((snap) {
-            final tarefas = snap.docs
-                .map((d) => TarefaDetail.fromMap(d.data(), d.id))
-                .toList();
-
-            final Map<String?, List<TarefaDetail>> grouped = {};
-            for (final tarefa in tarefas) {
-              final enriched = tarefa.copyWith(
-                trilhaNome: trilha.title,
-                metaRelacionada: tarefa.metaRelacionada,
-              );
-              grouped
-                .putIfAbsent(tarefa.metaRelacionada, () => [])
-                .add(enriched);
-            }
-
-            final classifiedLists = grouped.entries.map((entry) {
-              return ClassifiedList(
-                classifier: entry.key,
-                items: entry.value,
-              );
-            }).toList();
-
-            return trilha.copyWith(tarefas: classifiedLists);
-          });
-      });
-
-      return Rx.combineLatestList(enrichedStreams);
+  Future<void> updateByMap(String id, Map<String, Object?> map) async {
+    await firestore.collection(collection).doc(id).update({
+      ...map,
+      'updatedBy': FirebaseAuth.instance.currentUser?.email ?? 'unknown',
+      'updatedAt': FieldValue.serverTimestamp(),
     });
-  }
-
-  Future<void> updateTarefa(String id, Map<String, dynamic> fields) async {
-    await firestore.collection('tarefas').doc(id).update(fields);
   }
 }
