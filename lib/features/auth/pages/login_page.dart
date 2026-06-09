@@ -1,3 +1,4 @@
+import 'package:SkillUp/core/utils/auth_email_validador.dart';
 import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
 
   Future<void> _login() async {
-    final email = _emailController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
@@ -24,8 +25,13 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    if (!email.contains('@')) {
+    if (!AuthEmailValidador.isValidEmailFormat(email)) {
       _showMessage('Digite um email válido.');
+      return;
+    }
+
+    if (!AuthEmailValidador.isAllowedCompanyEmail(email)) {
+      _showMessage('Use apenas email @souunit.com.br');
       return;
     }
 
@@ -38,6 +44,14 @@ class _LoginPageState extends State<LoginPage> {
         email: email,
         password: password,
       );
+
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AuthRoutes.home,
+          (route) => false,
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-email') {
         _showMessage('Email inválido.');
@@ -50,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
       } else if (e.code == 'too-many-requests') {
         _showMessage('Muitas tentativas. Tente novamente mais tarde.');
       } else {
-        _showMessage('Erro ao fazer login: ${e.message}');
+        _showMessage('Erro ao fazer login: ${e.code}');
       }
     } catch (e) {
       _showMessage('Erro inesperado ao fazer login.');
@@ -64,9 +78,15 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
@@ -115,7 +135,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 8),
               TextFieldBuilder.buildTextField(
-                hint: 'Email',
+                hint: 'E-mail',
                 fillColor: fieldColor,
                 controller: _emailController,
               ),
@@ -144,7 +164,10 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: const Text(
                     'Esqueceu a senha?',
-                    style: TextStyle(color: secondaryTextColor, fontSize: 13),
+                    style: TextStyle(
+                      color: secondaryTextColor,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
               ),
@@ -163,7 +186,14 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.4,
+                          ),
+                        )
                       : const Text(
                           'LOGIN',
                           style: TextStyle(

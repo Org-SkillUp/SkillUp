@@ -1,3 +1,4 @@
+import 'package:SkillUp/core/utils/auth_email_validador.dart';
 import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,24 +12,28 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
-  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-
+  final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _signup() async {
-    final name = _nameController.text.trim();
-    final email = _emailController.text.trim();
+    final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty) {
-      _showMessage('Preencha nome, email e senha.');
+    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      _showMessage('Preencha todos os campos.');
       return;
     }
 
-    if (!email.contains('@')) {
+    if (!AuthEmailValidador.isValidEmailFormat(email)) {
       _showMessage('Digite um email válido.');
+      return;
+    }
+
+    if (!AuthEmailValidador.isAllowedCompanyEmail(email)) {
+      _showMessage('Use apenas email @souunit.com.br');
       return;
     }
 
@@ -37,33 +42,50 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
+    if (password != confirmPassword) {
+      _showMessage('As senhas não coincidem.');
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final credential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
 
-      await credential.user?.updateDisplayName(name);
-      await credential.user?.sendEmailVerification();
+      await FirebaseAuth.instance.signOut();
 
       if (mounted) {
-        _showMessage('Conta criada com sucesso! Verifique seu email.');
-        Navigator.pushReplacementNamed(context, AuthRoutes.login);
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Conta criada com sucesso! Faça login para continuar.'),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AuthRoutes.login,
+          (route) => false,
+        );
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        _showMessage('A senha é muito fraca.');
+        _showMessage('Senha fraca.');
       } else if (e.code == 'email-already-in-use') {
-        _showMessage('Já existe uma conta com esse email.');
+        _showMessage('Este email já está em uso.');
       } else if (e.code == 'invalid-email') {
         _showMessage('Email inválido.');
       } else {
-        _showMessage('Erro ao criar conta: ${e.message}');
+        _showMessage('Erro ao cadastrar: ${e.code}');
       }
     } catch (e) {
-      _showMessage('Erro inesperado ao criar conta.');
+      _showMessage('Erro inesperado ao cadastrar.');
     } finally {
       if (mounted) {
         setState(() {
@@ -74,16 +96,22 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void _showMessage(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -94,52 +122,29 @@ class _SignupPageState extends State<SignupPage> {
     const textColor = Colors.white;
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          padding: EdgeInsets.fromLTRB(
-            24,
-            24,
-            24,
-            MediaQuery.of(context).viewInsets.bottom + 24,
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 32,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, AuthRoutes.login);
-                },
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-              ),
-              const SizedBox(height: 24),
-              const Center(
-                child: Text(
-                  'SKILLUP',
-                  style: TextStyle(
-                    fontSize: 38,
-                    fontWeight: FontWeight.w300,
-                    color: textColor,
-                    letterSpacing: 1.5,
-                  ),
+              const SizedBox(height: 48),
+              Center(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 240,
+                  height: 90,
+                  fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 28),
-              const Center(
-                child: Text(
-                  'Criar Conta',
-                  style: TextStyle(
-                    color: textColor,
-                    fontSize: 22,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 48),
               const Text(
-                'NOME COMPLETO',
+                'CRIAR CONTA',
                 style: TextStyle(
                   color: textColor,
                   fontSize: 13,
@@ -148,22 +153,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               const SizedBox(height: 8),
               TextFieldBuilder.buildTextField(
-                hint: 'Nome completo',
-                fillColor: fieldColor,
-                controller: _nameController,
-              ),
-              const SizedBox(height: 14),
-              const Text(
-                'EMAIL',
-                style: TextStyle(
-                  color: textColor,
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 8),
-              TextFieldBuilder.buildTextField(
-                hint: 'Email',
+                hint: 'Insira seu email',
                 fillColor: fieldColor,
                 controller: _emailController,
               ),
@@ -183,7 +173,23 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
                 controller: _passwordController,
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 14),
+              const Text(
+                'CONFIRMAR SENHA',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFieldBuilder.buildTextField(
+                hint: 'Confirmar senha',
+                fillColor: fieldColor,
+                obscureText: true,
+                controller: _confirmPasswordController,
+              ),
+              const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -192,14 +198,22 @@ class _SignupPageState extends State<SignupPage> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.4,
+                          ),
+                        )
                       : const Text(
-                          'CRIAR',
+                          'CADASTRAR',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
@@ -211,10 +225,13 @@ class _SignupPageState extends State<SignupPage> {
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, AuthRoutes.login);
+                    Navigator.pushReplacementNamed(
+                      context,
+                      AuthRoutes.login,
+                    );
                   },
                   child: const Text(
-                    'Log in',
+                    'Já tenho conta',
                     style: TextStyle(
                       color: textColor,
                       decoration: TextDecoration.underline,
@@ -222,7 +239,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 32),
             ],
           ),
         ),
