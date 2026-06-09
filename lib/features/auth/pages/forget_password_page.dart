@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-//import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:cloud_firestore/cloud_firestore.dart';
-//import 'dart:math';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -20,12 +20,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   String? _emailError;
   
   // Constantes de design
-  static const Color _backgroundColor = Color(0xFF16212D);
   static const Color _fieldColor = Color(0xFF243652);
   static const Color _primaryColor = Color(0xFF6FAEB3);
   static const Color _textColor = Colors.white;
   static const Color _errorColor = Color(0xFFE63946);
-  static const Color _successColor = Color(0xFF06D6A0);
   
   @override
   void initState() {
@@ -221,11 +219,11 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _backgroundColor,
       appBar: AppBar(
-        backgroundColor: _backgroundColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
+          padding: EdgeInsets.only(right: 150),
           icon: const Icon(Icons.arrow_back, color: _textColor),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -236,7 +234,6 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
           child: Container(
             width: 360,
             decoration: BoxDecoration(
-              color: _backgroundColor,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(

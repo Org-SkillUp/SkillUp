@@ -17,18 +17,38 @@ class CardItemTheme extends ThemeExtension<CardItemTheme> {
 
   @override
   CardItemTheme copyWith({
-    Color? sideColor,
+    Color? defaultSideColor,
+    Color? alternativeSideColor,
     Color? backgroundColor,
     Color? labelColor,
     Color? bodyColor,
   }) {
-    // TODO: implement copyWith
-    throw UnimplementedError();
+    return CardItemTheme(
+      defaultSideColor: defaultSideColor ?? this.defaultSideColor,
+      alternativeSideColor:
+          alternativeSideColor ?? this.alternativeSideColor,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      labelColor: labelColor ?? this.labelColor,
+      bodyColor: bodyColor ?? this.bodyColor,
+    );
   }
-  
+
   @override
-  ThemeExtension<CardItemTheme> lerp(covariant ThemeExtension<CardItemTheme>? other, double t) {
-    // TODO: implement lerp
-    throw UnimplementedError();
+  CardItemTheme lerp(covariant ThemeExtension<CardItemTheme>? other, double t) {
+    if (other is! CardItemTheme) return this;
+
+    return CardItemTheme(
+      defaultSideColor:
+          Color.lerp(defaultSideColor, other.defaultSideColor, t)!,
+      alternativeSideColor: Color.lerp(
+        alternativeSideColor,
+        other.alternativeSideColor,
+        t,
+      )!,
+      backgroundColor:
+          Color.lerp(backgroundColor, other.backgroundColor, t)!,
+      labelColor: Color.lerp(labelColor, other.labelColor, t)!,
+      bodyColor: Color.lerp(bodyColor, other.bodyColor, t)!,
+    );
   }
 }

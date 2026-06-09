@@ -9,7 +9,7 @@ class ProgressCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
 
       decoration: BoxDecoration(
-        color: const Color(0xFF3B6E4E),
+        color: const Color(0xFF345645),
         borderRadius: BorderRadius.circular(20),
       ),
 
@@ -23,39 +23,43 @@ class ProgressCard extends StatelessWidget {
 
             children: [
 
-              const Text(
-                "Progresso Geral",
-                style: TextStyle(
-                  color: Colors.white70,
-                   fontSize: 20,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Progresso Geral",
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Text(
+                    "60%",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
 
               Container(
                 padding: const EdgeInsets.all(8),
-
+                height: 52,
+                width: 52,
                 decoration: BoxDecoration(
-                  color: Colors.white24,
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
 
                 child: const Icon(
                   Icons.trending_up,
+                  size: 28,
                   color: Colors.white,
                 ),
               ),
             ],
-          ),
-
-          const SizedBox(height: 12),
-
-          const Text(
-            "60%",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 38,
-              fontWeight: FontWeight.bold,
-            ),
           ),
 
           const SizedBox(height: 12),
@@ -66,6 +70,7 @@ class ProgressCard extends StatelessWidget {
             child: const LinearProgressIndicator(
               value: 0.6,
               minHeight: 8,
+              color: Color(0xFF4BA759),
               backgroundColor: Colors.black26,
             ),
           ),
@@ -76,7 +81,7 @@ class ProgressCard extends StatelessWidget {
             "3 de 5 trilhas concluídas",
             style: TextStyle(
               color: Colors.white70,
-               fontSize: 18,
+               fontSize: 12,
             ),
           ),
         ],

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "890441203738",
+    "project_id": "skilliup-db",
+    "storage_bucket": "skilliup-db.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:890441203738:android:152ab2080631dab033d1a3",
+        "android_client_info": {
+          "package_name": "com.example.proj"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2OmK8V4LjZ-4U4FW1bXCs0Ffpor01xm4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

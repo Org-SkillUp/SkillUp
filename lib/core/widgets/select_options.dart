@@ -1,4 +1,3 @@
-import 'package:SkillUp/core/widgets/field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -7,19 +6,14 @@ class SelectOptions extends StatelessWidget {
     super.key,
     required this.options,
     required this.selected,
+    required this.selectedLabel,
     required this.onChanged,
-    this.allowCreation = false,
-    this.onCreated,
-  }) : assert(
-    !allowCreation || onCreated != null,
-    'Metódo de criação (onCreated) não fornecido',
-  );
+  });
 
-  final List<String> options;
+  final Map<String, String> options;
   final String selected;
+  final String selectedLabel;
   final ValueChanged<String> onChanged;
-  final bool allowCreation;
-  final ValueChanged<String>? onCreated;
 
   static const _buttonColor = Color(0xFF2E4360);
   static const _borderRadius = 14.0;
@@ -29,57 +23,64 @@ class SelectOptions extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: _buttonColor,
-        borderRadius: BorderRadius.circular(_borderRadius),
-      ),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: options.contains(selected) ? selected : null,
-          dropdownColor: colorScheme.surface,
-          iconEnabledColor: colorScheme.primary,
-          icon: SvgPicture.asset(
-            'assets/icons/arrow_down_icon.svg',
-            colorFilter: ColorFilter.mode(
-              colorScheme.primary,
-              BlendMode.srcIn,
-            ),
-          ),
-          style: textTheme.titleMedium?.copyWith(
-            color: colorScheme.primary,
-            fontWeight: FontWeight.w700,
-          ),
-          isExpanded: true,
+    return DropdownMenu<String>(
+      initialSelection: options.keys.contains(selected) ? selected : null,
+      enableSearch: true,
+      enableFilter: true,
+      requestFocusOnTap: true,
+      expandedInsets: EdgeInsets.zero,
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: _buttonColor,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(_borderRadius),
-          onChanged: (value) {
-            if (value != null) onChanged(value);
-          },
-          items: [
-            ...options.map(
-              (option) => DropdownMenuItem(
-                value: option,
-                child: Text(
-                  option,
-                  style: TextStyle(
-                    fontFamily: 'Arimo'
-                  ),
-                ),
-              ),
-            ),
-            if (allowCreation)
-              DropdownMenuItem<String>(
-                enabled: false,
-                value: '__create__',
-                child: TextFieldBuilder.buildTextField(
-                  hint: 'Criar Trilha',
-                  fillColor: Colors.red,
-                ),
-              ),
-          ],
+          borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius),
+          borderSide: BorderSide.none,
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(_borderRadius),
+          borderSide: BorderSide.none,
         ),
       ),
+      textStyle: textTheme.titleMedium?.copyWith(
+        color: colorScheme.primary,
+        fontWeight: FontWeight.w700,
+        fontFamily: 'Arimo',
+      ),
+      menuStyle: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(colorScheme.surface),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(_borderRadius),
+          ),
+        ),
+      ),
+      trailingIcon: SvgPicture.asset(
+        'assets/icons/arrow_down_icon.svg',
+        colorFilter: ColorFilter.mode(colorScheme.primary, BlendMode.srcIn),
+      ),
+      selectedTrailingIcon: SvgPicture.asset(
+        'assets/icons/arrow_down_icon.svg',
+        colorFilter: ColorFilter.mode(colorScheme.primary, BlendMode.srcIn),
+      ),
+      onSelected: (value) {
+        if (value != null) onChanged(value);
+      },
+      dropdownMenuEntries: options.entries.map(
+        (option) => DropdownMenuEntry<String>(
+          value: option.key,
+          label: option.value,
+          style: ButtonStyle(
+            textStyle: WidgetStatePropertyAll(
+              textTheme.bodyMedium?.copyWith(fontFamily: 'Arimo'),
+            ),
+          ),
+        ),
+      ).toList(),
     );
   }
 }

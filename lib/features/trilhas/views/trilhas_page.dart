@@ -1,68 +1,99 @@
-import 'package:SkillUp/core/theme/state_button_theme.dart';
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
-import 'package:SkillUp/core/widgets/indicator.dart';
 import 'package:SkillUp/core/widgets/quantity_indicator.dart';
 import 'package:SkillUp/core/widgets/selectable_title.dart';
-import 'package:SkillUp/core/widgets/state_button.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list_item.dart';
+import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
+import 'package:SkillUp/features/trilhas/models/trilha.dart';
+import 'package:SkillUp/features/trilhas/viewmodels/trilha_view_model.dart';
+import 'package:SkillUp/features/trilhas/views/blank_trilhas_view.dart';
+import 'package:SkillUp/features/trilhas/widgets/creation_buttons.dart';
+import 'package:SkillUp/features/trilhas/widgets/info_panel.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-const options = [
-  'Administração de Empresas',
-  'Tecnologia',
-  'Design',
-];
+class TrilhasPage extends StatefulWidget {
+  const TrilhasPage({
+    super.key,
+    this.selected
+  });
 
-const cardsInfo = [
-  "14/03/2026",
-  "Ativa"
-];
+  final String? selected;
 
-void toggleSelected(ListItem item) {
-  item.isSelected = !item.isSelected;
+  @override
+  State<TrilhasPage> createState() => _TrilhasPageState();
 }
 
-var taskList = [
-  ClassifiedList(
-    classifier: "Prova Gestão de Vendas",
-    items: [
-      ListItem(
-        title: "Estudar Canais de Vendas",
-        subtitle: "Prova gestão de vendas",
-        onTap: toggleSelected,
-        isSelected: true,
-        date: "14/03/2026",
-      ),
-    ],
-  ),
-  ClassifiedList(
-    classifier: "Prova Administração de Empresas",
-    items: [
-      ListItem(
-        title: "Estudar Fluxo de Caixa",
-        subtitle: "Prova administração financeira",
-        onTap: toggleSelected,
-        isSelected: false,
-        date: "20/04/2026",
-      ),
-    ],
-  ),
-];
+class _TrilhasPageState extends State<TrilhasPage> {
+  late final TrilhasViewModel _vm;
+  final _trilhaNomeController = TextEditingController();
 
-void addTarefa() {
-  print("Tarefa adicionada");
-}
+  @override
+  void initState() {
+    super.initState();
+    final email = FirebaseAuth.instance.currentUser?.email ?? 'unknown';
+    _vm = TrilhasViewModel(userEmail: email);
+    _vm.setNavigationCallback(
+      (tarefa) => TarefasNavigation.goToDetalhe(context, tarefa),
+    );
+  }
 
-class TrilhasPage extends StatelessWidget {
-  const TrilhasPage({super.key});
+  @override
+  void dispose() {
+    _trilhaNomeController.dispose();
+    _vm.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final stButton = Theme.of(context).extension<StateButtonTheme>()!;
-    
+    return StreamBuilder<List<Trilha>>(
+      stream: _vm.trilhasStream,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: TopAppBar(),
+            body: Center(
+              child: Text('Erro ao carregar trilhas: ${snapshot.error}'),
+            ),
+            bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        final trilhas = snapshot.data ?? [];
+
+        if (trilhas.isEmpty) {
+          return BlankTrilhasView(
+            onCreateTrilha: (trilha) => _vm.createTrilhaModel(trilha),
+          );
+        }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _vm.onStreamData(trilhas);
+        });
+
+        return ListenableBuilder(
+          listenable: _vm,
+          builder: (context, _) => _buildContent(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildContent(BuildContext context) {
+    final selected = _vm.selected;
+
+    if (selected == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       appBar: TopAppBar(),
       body: SafeArea(
@@ -74,96 +105,60 @@ class TrilhasPage extends StatelessWidget {
                 Expanded(
                   child: SelectableTitle(
                     label: 'Trilha Selecionada',
-                    underLabel: '1 de 2 tarefas concluídas',
-                    options: options,
-                    selected: options[0],
-                    onChanged: (_) {},
+                    selectedLabel: selected.title,
+                    underLabel: _vm.progressLabel,
+                    options: Map.fromEntries(
+                      _vm.trilhas.map((t) => MapEntry(t.id!, t.title)),
+                    ),
+                    selected: selected.id!,
+                    onChanged: _vm.selectTrilha,
+                    onDelete: _vm.handleDelete,
                   ),
                 ),
-
                 const SizedBox(width: 28),
-
-                // TODO: implementar lógica de cálculo de progresso
-                QuantityIndicator(value: "50%")
+                QuantityIndicator(value: _vm.progressValue),
               ],
             ),
 
             const SizedBox(height: 16),
 
-            Row(
-              children: [
-                Expanded(
-                  child: Indicator(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Início',
-                    value: cardsInfo[0],
-                  ),
-                ),
-                const SizedBox(width: 32),
-                Expanded(
-                  child: Indicator(
-                    icon: Icons.circle,
-                    label: 'Status',
-                    value: cardsInfo[1],
-                    // TODO: implementar cores dinâmicas de acordo com status
-                    dotColor: const Color(0xFF55B3D5),
-                    valueColor: const Color(0xFF55B3D5),
-                  ),
-                ),
-              ],
+            InfoPanel(
+              selected: selected,
+              vm: _vm,
+              trilhaNomeController: _trilhaNomeController,
             ),
+
+            if (!_vm.showButtonsInPanel) ...[
+              CreationButtons(
+                selected: selected, 
+                vm: _vm, 
+                trilhaNomeController: _trilhaNomeController
+              ),
+            ],
 
             const SizedBox(height: 20),
 
-            Column(
-              children: [
-                StateButton(
-                  onPressed: () {},
-                  label: Text(
-                    'PAUSAR',
-                    style: TextStyle(
-                      color: stButton.outlinedYellowHighlighColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Arimo',
-                      fontSize: 16,
-                    ),
-                  ),
-                  bgColor: stButton.outlinedBackgroundColor,
-                  borderColor: stButton.outlinedYellowHighlighColor,
-                  borderRadius: 14,
-                ),
-                const SizedBox(height: 16),
-                StateButton(
-                  onPressed: () {},
-                  label: Text(
-                    'NOVA TRILHA',
-                    style: TextStyle(
-                      color: stButton.plainLabelColor,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Arimo',
-                      fontSize: 16,
-                    ),
-                  ),
-                  bgColor: stButton.plainBackgroundColor,
-                  borderRadius: 16,
-                  icon: Icon(Icons.add, color: stButton.plainLabelColor),
-                ),
-              ],
+            CardListWrapper(
+              title: 'TAREFAS',
+              items: selected.tarefas,
+              onAdd: () => TarefasNavigation.goToCriarTarefa(context, trilhaId: selected.id),
             ),
 
-            SizedBox(height: 20),
-
-            CardListWrapper(
-              title: "TAREFAS", 
-              items: taskList, 
-              onAdd: () => print("Add"),
-            )
+            if (selected.tarefas.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Nenhuma tarefa cadastrada ainda.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-      bottomNavigationBar: BotAppBar(
-        selectedPage: AuthRoutes.trilhas,
-      ),
+      bottomNavigationBar: BotAppBar(selectedPage: AuthRoutes.trilhas),
     );
   }
 }
