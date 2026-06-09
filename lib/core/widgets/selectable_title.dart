@@ -13,6 +13,7 @@ class SelectableTitle extends StatefulWidget {
     required this.onChanged,
     this.allowCreation = false,
     this.controller,
+    this.onDelete,
   });
 
   final String label;
@@ -23,6 +24,7 @@ class SelectableTitle extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final bool allowCreation;
   final TextEditingController? controller;
+  final VoidCallback? onDelete;
 
   @override
   State<SelectableTitle> createState() => _SelectableTitleState();
@@ -54,12 +56,27 @@ class _SelectableTitleState extends State<SelectableTitle> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          widget.label,
-          style: textTheme.labelMedium?.copyWith(
-            color: colorScheme.primary.withAlpha(153),
-            fontFamily: 'Arimo',
-          ),
+        Row(
+          children: [
+            Text(
+              widget.label,
+              style: textTheme.labelMedium?.copyWith(
+                color: colorScheme.primary.withAlpha(153),
+                fontFamily: 'Arimo',
+              ),
+            ),
+            if (widget.onDelete != null) ...[
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: widget.onDelete,
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 16,
+                  color: colorScheme.error.withAlpha(180),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 8),
 

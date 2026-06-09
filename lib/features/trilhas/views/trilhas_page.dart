@@ -8,6 +8,7 @@ import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:SkillUp/features/trilhas/viewmodels/trilha_view_model.dart';
 import 'package:SkillUp/features/trilhas/views/blank_trilhas_view.dart';
+import 'package:SkillUp/features/trilhas/widgets/creation_buttons.dart';
 import 'package:SkillUp/features/trilhas/widgets/info_panel.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -111,6 +112,7 @@ class _TrilhasPageState extends State<TrilhasPage> {
                     ),
                     selected: selected.id!,
                     onChanged: _vm.selectTrilha,
+                    onDelete: _vm.handleDelete,
                   ),
                 ),
                 const SizedBox(width: 28),
@@ -125,6 +127,14 @@ class _TrilhasPageState extends State<TrilhasPage> {
               vm: _vm,
               trilhaNomeController: _trilhaNomeController,
             ),
+
+            if (!_vm.showButtonsInPanel) ...[
+              CreationButtons(
+                selected: selected, 
+                vm: _vm, 
+                trilhaNomeController: _trilhaNomeController
+              ),
+            ],
 
             const SizedBox(height: 20),
 

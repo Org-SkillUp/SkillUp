@@ -14,8 +14,17 @@ enum TrilhaStatus {
   static TrilhaStatus fromString(String? value) {
     return TrilhaStatus.values.firstWhere(
       (e) => e.name == value,
-      orElse: () => TrilhaStatus.active,
+      orElse: () => TrilhaStatus.pending,
     );
+  }
+
+  bool canTransitionTo(TrilhaStatus next) {
+    return switch (this) {
+      TrilhaStatus.pending => next != TrilhaStatus.paused,
+      TrilhaStatus.active => true,
+      TrilhaStatus.completed => next != TrilhaStatus.paused,
+      TrilhaStatus.paused => next != TrilhaStatus.completed,
+    };
   }
 }
 
@@ -26,6 +35,8 @@ class Trilha extends PersistenceModel {
   final DateTime? startedAt;
   final DateTime? finishedAt;
   final DateTime? duedate;
+  final DateTime? pausedAt;
+  final DateTime? resumedAt;
 
   Trilha({
     super.id,
@@ -38,15 +49,21 @@ class Trilha extends PersistenceModel {
     this.tarefas = const [],
     this.startedAt,
     this.finishedAt,
+    this.pausedAt,
+    this.resumedAt,
   });
+
+  static const _unset = Object();
 
   Trilha copyWith({
     String? title,
     TrilhaStatus? status,
     List<ClassifiedList>? tarefas,
-    DateTime? startedAt,
-    DateTime? finishedAt,
-    DateTime? duedate,
+    Object? startedAt = _unset,
+    Object? finishedAt = _unset,
+    Object? duedate = _unset,
+    Object? pausedAt = _unset,
+    Object? resumedAt = _unset,
   }) {
     return Trilha(
       id: id,
@@ -54,11 +71,13 @@ class Trilha extends PersistenceModel {
       updatedAt: updatedAt,
       createdBy: createdBy,
       title: title ?? this.title,
-      duedate: duedate ?? this.duedate,
       status: status ?? this.status,
       tarefas: tarefas ?? this.tarefas,
-      startedAt: startedAt ?? this.startedAt,
-      finishedAt: finishedAt ?? this.finishedAt,
+      duedate: identical(duedate, _unset) ? this.duedate : duedate as DateTime?,
+      startedAt: identical(startedAt, _unset) ? this.startedAt : startedAt as DateTime?,
+      finishedAt: identical(finishedAt, _unset) ? this.finishedAt : finishedAt as DateTime?,
+      pausedAt: identical(pausedAt, _unset) ? this.pausedAt : pausedAt as DateTime?,
+      resumedAt: identical(resumedAt, _unset) ? this.resumedAt : resumedAt as DateTime?,
     );
   }
 
@@ -66,13 +85,15 @@ class Trilha extends PersistenceModel {
     return Trilha(
       id: id,
       title: map['title'] ?? '',
-      duedate: (map['duedate'] as Timestamp?)?.toDate(),
       status: TrilhaStatus.fromString(map['status']),
-      createdBy: map['createdBy'],
+      createdBy: map['createdBy'] as String?,
       createdAt: (map['createdAt'] as Timestamp?)?.toDate(),
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate(),
+      duedate: (map['duedate'] as Timestamp?)?.toDate(),
       startedAt: (map['startedAt'] as Timestamp?)?.toDate(),
       finishedAt: (map['finishedAt'] as Timestamp?)?.toDate(),
+      pausedAt: (map['pausedAt'] as Timestamp?)?.toDate(),
+      resumedAt: (map['resumedAt'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -80,10 +101,12 @@ class Trilha extends PersistenceModel {
   Map<String, dynamic> toMap() {
     return {
       'title': title,
-      'duedate': duedate != null ? Timestamp.fromDate(duedate!) : null,
       'status': status.name,
+      'duedate': duedate != null ? Timestamp.fromDate(duedate!) : null,
       'startedAt': startedAt != null ? Timestamp.fromDate(startedAt!) : null,
       'finishedAt': finishedAt != null ? Timestamp.fromDate(finishedAt!) : null,
+      'pausedAt': pausedAt != null ? Timestamp.fromDate(pausedAt!) : null,
+      'resumedAt': resumedAt != null ? Timestamp.fromDate(resumedAt!) : null,
     };
   }
 }

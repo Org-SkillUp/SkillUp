@@ -40,69 +40,68 @@ class _CardListWrapperState extends State<CardListWrapper> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    widget.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Arimo',
+                    ),
+                  ),
+                  if (widget.subtitle != null) ...[
+                    const SizedBox(height: 4),
+                    Text(
+                      widget.subtitle!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontFamily: 'Arimo',
+                        color: Colors.white.withAlpha(153),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (widget.onExpand != null)
+              TextButton(
+                onPressed: widget.onExpand,
+                child: const Text(
+                  'Ver todas',
+                  style: TextStyle(
                     fontFamily: 'Arimo',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
                   ),
                 ),
-                if (widget.subtitle != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    '${widget.subtitle}',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontFamily: 'Arimo',
-                      color: Colors.white.withAlpha(153),
-                    ),
+              ),
+            if (widget.onAdd != null)
+              IconButton(
+                onPressed: widget.onAdd,
+                icon: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    _showInput ? Icons.close : Icons.add,
+                    key: ValueKey(_showInput),
+                    size: 20,
+                    color: colorScheme.primary,
                   ),
-                ]
-              ],
-            ),
-            Row(
-              children: [
-                if (widget.onExpand != null)
-                  TextButton(
-                    onPressed: widget.onExpand,
-                    child: const Text(
-                      'Ver todas',
-                      style: TextStyle(
-                        fontFamily: 'Arimo',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                    ),
+                ),
+                constraints: const BoxConstraints(maxHeight: 32, maxWidth: 32),
+                style: IconButton.styleFrom(
+                  backgroundColor: const Color(0xFF44505D),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                if (widget.onAdd != null)
-                  IconButton(
-                    onPressed: widget.onAdd,
-                    icon: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 200),
-                      child: Icon(
-                        _showInput ? Icons.close : Icons.add,
-                        key: ValueKey(_showInput),
-                        size: 20,
-                        color: colorScheme.primary,
-                      ),
-                    ),
-                    constraints: const BoxConstraints(maxHeight: 32, maxWidth: 32),
-                    style: IconButton.styleFrom(
-                      backgroundColor: const Color(0xFF44505D),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      padding: const EdgeInsets.all(4),
-                    ),
-                  ),
-              ],
-            ),
+                  padding: const EdgeInsets.all(4),
+                ),
+              ),
           ],
         ),
 
@@ -113,7 +112,7 @@ class _CardListWrapperState extends State<CardListWrapper> {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (classifier != null) ...[
+              if (classifier != null && classifier.isNotEmpty) ...[
                 Container(
                   padding: const EdgeInsets.only(bottom: 6, top: 16),
                   width: double.maxFinite,
@@ -135,11 +134,22 @@ class _CardListWrapperState extends State<CardListWrapper> {
                 ),
                 const SizedBox(height: 12),
               ],
-              ...groupItems.map((item) => CardItem(
-                item: item,
-                showDateIcon: true,
-                showBottomDate: true,
-              )),
+
+              const SizedBox(height: 12),
+
+              ...groupItems.asMap().entries.map((entry) {
+                final isLast = entry.key == groupItems.length - 1;
+                return Column(
+                  children: [
+                    CardItem(
+                      item: entry.value,
+                      showDateIcon: true,
+                      showBottomDate: true,
+                    ),
+                    if (!isLast) const SizedBox(height: 12),
+                  ],
+                );
+              }),
             ],
           );
         }),

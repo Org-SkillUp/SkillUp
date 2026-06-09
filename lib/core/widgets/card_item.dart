@@ -103,7 +103,7 @@ class CardItem extends StatelessWidget {
                   ),
                 ],
 
-                if (showBottomDate && item.date != null) ...[
+                if (showBottomDate) ...[
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -116,7 +116,11 @@ class CardItem extends StatelessWidget {
                         const SizedBox(width: 6),
                       ],
                       Text(
-                        '$datePrefix${_formatDate(item.date)}',
+                        '$datePrefix${
+                          item.date != null 
+                          ? _formatDate(item.date)
+                          : "Indefinido"
+                        }',
                         style: textTheme.labelSmall?.copyWith(
                           color: muted,
                           fontFamily: 'Arimo',

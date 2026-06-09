@@ -1,6 +1,8 @@
 # Skillup
 
-| **Membro** | **Tela e Funcionalidade** |
+# TODO: atualizar readme
+
+| **Membro** | **Tela e Funcionalidade** | **Link do Vídeo de Defesa**
 |---|---|
 | Ádrian Smith de Almeida Meneses  | Tela de Conta |
 | Luiz Henrique Silva Fontes  | Tarefas |
