@@ -9,4 +9,4 @@
 | Kaua Marques Emidio  | Login e Criar Conta |
 |  Luiz Felipe Aranhas Souza | Recuperar Senha |
 
-Vídeo Kauã Marques Emidio: https://drive.google.com/file/d/1BaXrqhCbjxYQZPSD1eYOk5oyS96ANth7/view?usp=sharing
+Vídeo defesa Kauã Marques Emidio: https://drive.google.com/file/d/1BaXrqhCbjxYQZPSD1eYOk5oyS96ANth7/view?usp=sharing
