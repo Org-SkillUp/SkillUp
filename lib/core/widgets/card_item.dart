@@ -117,9 +117,7 @@ class CardItem extends StatelessWidget {
                       ],
                       Text(
                         '$datePrefix${
-                          item.date != null 
-                          ? _formatDate(item.date)
-                          : "Indefinido"
+                          item.date != null ? _formatDate(item.date) : "Indefinido"
                         }',
                         style: textTheme.labelSmall?.copyWith(
                           color: muted,
@@ -136,7 +134,7 @@ class CardItem extends StatelessWidget {
           if (showCheckbox)
             Checkbox(
               value: item.isSelected,
-              onChanged: (_) => item.onTap?.call(),
+              onChanged: (_) => item.onTap?.call(item),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),

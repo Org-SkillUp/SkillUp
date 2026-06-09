@@ -50,7 +50,7 @@ class TrilhasViewModel extends ChangeNotifier {
             final taskId = item.id;
             return item.copyWith(
               onOpen: _onOpenTarefa != null ? () => _onOpenTarefa!(item) : null,
-              onTap: () => _toggleTaskById(taskId, item.concluida),
+              onTap: (listItem) => _toggleTaskById(taskId, listItem.concluida ?? false),
             );
           }
           return item;
