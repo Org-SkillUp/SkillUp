@@ -12,18 +12,28 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
   Future<void> _signup() async {
+    final name = _nameController.text.trim();
     final email = _emailController.text.trim().toLowerCase();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
 
-    if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+    if (name.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       _showMessage('Preencha todos os campos.');
+      return;
+    }
+
+    if (name.length < 2) {
+      _showMessage('Digite um nome válido.');
       return;
     }
 
@@ -52,10 +62,11 @@ class _SignupPageState extends State<SignupPage> {
     });
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final credential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      await credential.user?.updateDisplayName(name);
+      await credential.user?.reload();
 
       await FirebaseAuth.instance.signOut();
 
@@ -63,7 +74,9 @@ class _SignupPageState extends State<SignupPage> {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Conta criada com sucesso! Faça login para continuar.'),
+            content: Text(
+              'Conta criada com sucesso! Faça login para continuar.',
+            ),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -100,15 +113,13 @@ class _SignupPageState extends State<SignupPage> {
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        behavior: SnackBarBehavior.floating,
-      ),
+      SnackBar(content: Text(message), behavior: SnackBarBehavior.floating),
     );
   }
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
@@ -142,9 +153,26 @@ class _SignupPageState extends State<SignupPage> {
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
+
               const Text(
-                'CRIAR CONTA',
+                'NOME',
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 8),
+              TextFieldBuilder.buildTextField(
+                hint: 'Insira seu nome',
+                fillColor: fieldColor,
+                controller: _nameController,
+              ),
+
+              const SizedBox(height: 14),
+              const Text(
+                'E-MAIL',
                 style: TextStyle(
                   color: textColor,
                   fontSize: 13,
@@ -157,6 +185,7 @@ class _SignupPageState extends State<SignupPage> {
                 fillColor: fieldColor,
                 controller: _emailController,
               ),
+
               const SizedBox(height: 14),
               const Text(
                 'SENHA',
@@ -173,6 +202,7 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
                 controller: _passwordController,
               ),
+
               const SizedBox(height: 14),
               const Text(
                 'CONFIRMAR SENHA',
@@ -189,6 +219,7 @@ class _SignupPageState extends State<SignupPage> {
                 obscureText: true,
                 controller: _confirmPasswordController,
               ),
+
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -221,14 +252,12 @@ class _SignupPageState extends State<SignupPage> {
                         ),
                 ),
               ),
+
               const SizedBox(height: 12),
               Center(
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      AuthRoutes.login,
-                    );
+                    Navigator.pushReplacementNamed(context, AuthRoutes.login);
                   },
                   child: const Text(
                     'Já tenho conta',
@@ -239,6 +268,7 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ),
               ),
+
               const SizedBox(height: 32),
             ],
           ),
