@@ -10,14 +10,11 @@ import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/tarefas/data/tarefa_repository.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
+import 'package:SkillUp/features/trilhas/data/trilhas_disponiveis.dart';
 import 'package:SkillUp/features/trilhas/models/list_item.dart';
 import 'package:flutter/material.dart';
 
-const options = [
-  'Administração de Empresas',
-  'Tecnologia',
-  'Design',
-];
+const options = TrilhasDisponiveis.nomes;
 
 const cardsInfo = [
   "14/03/2026",

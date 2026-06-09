@@ -54,9 +54,10 @@ class _TarefaCreatePageState extends State<TarefaCreatePage> {
   }
 
   Future<void> _handleCreate() async {
-    // Validação mínima: o título é obrigatório para identificar a tarefa.
-    if (_controllers.titulo.text.trim().isEmpty) {
-      _showErrorSnackBar('Informe ao menos o título da tarefa.');
+    final erro = _controllers.validar();
+    if (erro != null) {
+      setState(() {});
+      _showErrorSnackBar(erro);
       return;
     }
 

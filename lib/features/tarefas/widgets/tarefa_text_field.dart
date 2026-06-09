@@ -1,5 +1,6 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Campo de texto reutilizável dos formulários de tarefa.
 ///
@@ -13,6 +14,9 @@ class TarefaTextField extends StatelessWidget {
     required this.label,
     this.hint,
     this.maxLines = 1,
+    this.keyboardType,
+    this.inputFormatters,
+    this.errorText,
   });
 
   final TextEditingController controller;
@@ -22,6 +26,9 @@ class TarefaTextField extends StatelessWidget {
   /// Número de linhas do campo. Use um valor maior para campos longos,
   /// como a descrição da tarefa.
   final int maxLines;
+  final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +49,18 @@ class TarefaTextField extends StatelessWidget {
         TextField(
           controller: controller,
           maxLines: maxLines,
+          keyboardType: keyboardType,
+          inputFormatters: inputFormatters,
           style: const TextStyle(fontSize: 14, color: Colors.white),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(
               color: Colors.white.withAlpha((255 * 0.4).round()),
+            ),
+            errorText: errorText,
+            errorStyle: const TextStyle(
+              color: Color(0xFFCF8080),
+              fontSize: 12,
             ),
             filled: true,
             fillColor: cardColor,
@@ -57,6 +71,28 @@ class TarefaTextField extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: errorText != null
+                  ? const BorderSide(color: Color(0xFFCF8080))
+                  : BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: errorText != null
+                    ? const Color(0xFFCF8080)
+                    : Colors.white.withAlpha((255 * 0.3).round()),
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFCF8080)),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFFCF8080)),
             ),
           ),
         ),

@@ -84,8 +84,8 @@ class TarefaDetail extends PersistenceModel {
     id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
     trilhaNome: 'Administração de Empresas',
-    dataInicio: '18 de abril de 2026',
-    dataPrazo: '20 de abril de 2026',
+    dataInicio: '18/04/2026',
+    dataPrazo: '20/04/2026',
     metaRelacionada: 'Prova administração financeira',
     descricao:
         'Leitura do material didático sobre gestão de tesouraria e resolução '
