@@ -6,7 +6,6 @@ import 'package:SkillUp/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
 import 'features/auth/pages/login_page.dart';
 import 'features/auth/pages/signup_page.dart';
 import 'features/auth/routes/auth_routes.dart';
@@ -19,6 +18,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(const SkillUp());
 }
 
@@ -27,25 +27,58 @@ class SkillUp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isLogged = FirebaseAuth.instance.currentUser != null;
-
     return MaterialApp(
       title: 'SkillUp',
       theme: AppTheme.mainTheme,
       debugShowCheckedModeBanner: false,
-      initialRoute: isLogged ? AuthRoutes.home : AuthRoutes.login,
-      routes: {
-        AuthRoutes.login: (_) => const LoginPage(),
-        AuthRoutes.signup: (_) => const SignupPage(),
-        AuthRoutes.forgotPassword: (_) => const ForgetPasswordPage(),
-        AuthRoutes.trilhas: (_) => const TrilhasPage(),
-        AuthRoutes.conta: (_) => const ContaPage(),
-        AuthRoutes.home: (_) {
-          final user = FirebaseAuth.instance.currentUser;
-          return HomePage(userName: user?.email ?? 'Usuário');
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.userChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (snapshot.hasData) {
+            final user = snapshot.data!;
+            return HomePage(
+              userName: user.displayName ?? user.email ?? 'Usuário',
+            );
+          }
+
+          return const LoginPage();
         },
-        AuthRoutes.tarefas: (_) =>
-            const TarefaDetailPage(tarefa: TarefaDetail.mock),
+      ),
+      onGenerateRoute: (settings) {
+        final routes = <String, WidgetBuilder>{
+          AuthRoutes.login: (_) => const LoginPage(),
+          AuthRoutes.signup: (_) => const SignupPage(),
+          AuthRoutes.forgotPassword: (_) => const ForgetPasswordPage(),
+          AuthRoutes.trilhas: (_) => const TrilhasPage(),
+          AuthRoutes.conta: (_) => const ContaPage(),
+          AuthRoutes.home: (_) {
+            final user = FirebaseAuth.instance.currentUser;
+            return HomePage(
+              userName: user?.displayName ?? user?.email ?? 'Usuário',
+            );
+          },
+          AuthRoutes.tarefas: (_) =>
+              const TarefaDetailPage(tarefa: TarefaDetail.mock),
+        };
+
+        final builder = routes[settings.name];
+        if (builder != null) {
+          return MaterialPageRoute(
+            builder: builder,
+            settings: settings,
+          );
+        }
+
+        return MaterialPageRoute(
+          builder: (_) => const LoginPage(),
+          settings: settings,
+        );
       },
     );
   }
