@@ -73,11 +73,11 @@ class Trilha extends PersistenceModel {
       title: title ?? this.title,
       status: status ?? this.status,
       tarefas: tarefas ?? this.tarefas,
-      duedate:   identical(duedate,    _unset) ? this.duedate    : duedate    as DateTime?,
-      startedAt: identical(startedAt,  _unset) ? this.startedAt  : startedAt  as DateTime?,
+      duedate: identical(duedate, _unset) ? this.duedate : duedate as DateTime?,
+      startedAt: identical(startedAt, _unset) ? this.startedAt : startedAt as DateTime?,
       finishedAt: identical(finishedAt, _unset) ? this.finishedAt : finishedAt as DateTime?,
-      pausedAt:  identical(pausedAt,   _unset) ? this.pausedAt   : pausedAt   as DateTime?,
-      resumedAt: identical(resumedAt,  _unset) ? this.resumedAt  : resumedAt  as DateTime?,
+      pausedAt: identical(pausedAt, _unset) ? this.pausedAt : pausedAt as DateTime?,
+      resumedAt: identical(resumedAt, _unset) ? this.resumedAt : resumedAt as DateTime?,
     );
   }
 

@@ -112,6 +112,7 @@ class _TrilhasPageState extends State<TrilhasPage> {
                     ),
                     selected: selected.id!,
                     onChanged: _vm.selectTrilha,
+                    onDelete: _vm.handleDelete,
                   ),
                 ),
                 const SizedBox(width: 28),

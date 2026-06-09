@@ -283,6 +283,14 @@ class TrilhasViewModel extends ChangeNotifier {
     await _service.updateDateField(_selected!.id!, 'finishedAt', date);
   }
 
+  Future<void> handleDelete() async {
+    if (_selected?.id == null) {
+      return;
+    }
+
+    await _service.delete(_selected!.id!);
+  }
+
   void _sync() {
     _trilhas = [
       for (final t in _trilhas)

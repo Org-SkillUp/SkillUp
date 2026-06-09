@@ -107,4 +107,18 @@ class TrilhasService extends FirestoreService<Trilha> {
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
+
+  @override
+  Future<void> delete(String id) async {
+  final tarefasSnapshot = await firestore
+      .collection('tarefas')
+      .where('trilhaId', isEqualTo: id)
+      .get();
+
+    for (final doc in tarefasSnapshot.docs) {
+      await doc.reference.delete();
+    }
+
+    await firestore.collection(collection).doc(id).delete();
+  }
 }

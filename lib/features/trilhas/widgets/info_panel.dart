@@ -59,7 +59,10 @@ class InfoPanel extends StatelessWidget {
                   value: selected.status.label,
                   dotColor: _statusColor(context, selected.status),
                   valueColor: _statusColor(context, selected.status),
-                  selectOptions: TrilhaStatus.values.map((s) => s.label).toList(),
+                  selectOptions: TrilhaStatus.values
+                    .where((s) => s != selected.status && selected.status.canTransitionTo(s))
+                    .map((s) => s.label)
+                    .toList(),                  
                   onSelect: (label) {
                     final novoStatus = TrilhaStatus.values.firstWhere(
                       (s) => s.label == label,
