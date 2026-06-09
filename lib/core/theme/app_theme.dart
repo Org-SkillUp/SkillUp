@@ -58,11 +58,11 @@ class AppTheme {
         backgroundColor: Color(0xFF344256)
       ),
       StatusTheme(
-        activeColor: Colors.blue, 
-        pausedColor: Colors.yellow, 
-        completedColor: Colors.green, 
-        canceledColor: Colors.red, 
-        pendingColor: Colors.grey
+        activeColor: Color.fromARGB(255, 150, 208, 255), 
+        pausedColor: Color(0xFFCFB680), 
+        completedColor: Color.fromARGB(255, 166, 255, 169), 
+        canceledColor: Color.fromARGB(255, 255, 166, 160), 
+        pendingColor: Color.fromARGB(255, 204, 204, 204)
       )
     ],
   );

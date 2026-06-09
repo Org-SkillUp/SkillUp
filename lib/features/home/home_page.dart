@@ -4,7 +4,7 @@ import 'package:SkillUp/core/widgets/warning_card.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
 import 'package:SkillUp/core/widgets/header_card.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,31 +29,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _toggleSelected(ListItem item) {
-    setState(() {
-      item.isSelected = !item.isSelected;
-    });
+    item.isSelected = !item.isSelected;
   }
 
   void _loadTasks() {
     homeTasks = [
       ClassifiedList(
         classifier: "Hoje",
-        items: [
-          ListItem(
-            title: "Estudar Fluxo de Caixa",
-            subtitle: "Administração de Empresas",
-            date: "20/04/2026",
-            isSelected: false,
-            onTap: _toggleSelected,
-          ),
-          ListItem(
-            title: "Elaborar Plano de Marketing",
-            subtitle: "Marketing",
-            date: "23/04/2026",
-            isSelected: false,
-            onTap: _toggleSelected,
-          ),
-        ],
+        items: [],
       ),
     ];
   }
