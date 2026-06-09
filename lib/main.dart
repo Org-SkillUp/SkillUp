@@ -7,6 +7,7 @@ import 'package:SkillUp/features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/conta/views/conta_page.dart';
 import 'package:SkillUp/features/home/home_page.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/views/tarefa_create_page.dart';
 import 'package:SkillUp/features/tarefas/views/tarefa_detail_page.dart';
 import 'package:SkillUp/features/trilhas/views/trilhas_page.dart';
 import 'package:SkillUp/firebase_options.dart';
@@ -22,8 +23,16 @@ void main() async {
 
   runApp(const SkillUp());
 }
+
 class SkillUp extends StatelessWidget {
   const SkillUp({super.key});
+
+  MaterialPageRoute _fallback(RouteSettings settings) {
+    return MaterialPageRoute(
+      builder: (_) => const LoginPage(),
+      settings: settings,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -48,20 +57,70 @@ class SkillUp extends StatelessWidget {
           return const LoginPage();
         },
       ),
-      routes: {
-        AuthRoutes.login: (_) => const LoginPage(),
-        AuthRoutes.signup: (_) => const SignupPage(),
-        AuthRoutes.forgotPassword: (_) => const ForgetPasswordPage(),
-        AuthRoutes.home: (_) => AuthGuard(
-          child: HomePage(
-            userName: FirebaseAuth.instance.currentUser?.displayName ?? 'Usuário',
-          ),
-        ),
-        AuthRoutes.trilhas: (_) => const AuthGuard(child: TrilhasPage()),
-        AuthRoutes.conta: (_) => const AuthGuard(child: ContaPage()),
-        AuthRoutes.tarefas: (_) => const AuthGuard(
-          child: TarefaDetailPage(tarefa: TarefaDetail.mock),
-        ),
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+
+          case AuthRoutes.login:
+            return MaterialPageRoute(
+              builder: (_) => const LoginPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.signup:
+            return MaterialPageRoute(
+              builder: (_) => const SignupPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.forgotPassword:
+            return MaterialPageRoute(
+              builder: (_) => const ForgetPasswordPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.home:
+            final user = FirebaseAuth.instance.currentUser;
+            return MaterialPageRoute(
+              builder: (_) => AuthGuard(
+                child: HomePage(userName: user?.displayName ?? 'Usuário'),
+              ),
+              settings: settings,
+            );
+
+          case AuthRoutes.trilhas:
+            return MaterialPageRoute(
+              builder: (_) => const AuthGuard(child: TrilhasPage()),
+              settings: settings,
+            );
+
+          case AuthRoutes.conta:
+            return MaterialPageRoute(
+              builder: (_) => const AuthGuard(child: ContaPage()),
+              settings: settings,
+            );
+
+          case AuthRoutes.tarefas:
+            final tarefa = settings.arguments as TarefaDetail?;
+            if (tarefa == null) return _fallback(settings);
+            return MaterialPageRoute(
+              builder: (_) => AuthGuard(
+                child: TarefaDetailPage(tarefa: tarefa),
+              ),
+              settings: settings,
+            );
+
+          case AuthRoutes.criar:
+            final trilhaId = settings.arguments as String?;
+            return MaterialPageRoute(
+              builder: (_) => AuthGuard(
+                child: TarefaCreatePage(trilhaId: trilhaId),
+              ),
+              settings: settings,
+            );
+
+          default:
+            return _fallback(settings);
+        }
       },
     );
   }

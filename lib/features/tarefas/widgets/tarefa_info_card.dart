@@ -23,11 +23,11 @@ class TarefaInfoCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TarefaInfoRow(label: 'Iniciado', value: tarefa.dataInicio),
-          TarefaInfoRow(label: 'Prazo', value: tarefa.dataPrazo),
+          TarefaInfoRow(label: 'Iniciado', value: tarefa.dataInicio?.toString() ?? 'Não iniciado'),
+          TarefaInfoRow(label: 'Prazo', value: tarefa.dataPrazo?.toString() ?? 'Não definido'),
           TarefaInfoRow(
             label: 'Meta Relacionada',
-            value: tarefa.metaRelacionada,
+            value: tarefa.metaRelacionada ?? "Nenhuma",
           ),
         ],
       ),

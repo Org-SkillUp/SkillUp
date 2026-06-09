@@ -12,8 +12,8 @@ class SelectableTitle extends StatefulWidget {
     required this.selected,
     required this.onChanged,
     this.allowCreation = false,
-    this.onCreated,
     this.controller,
+    this.onDelete,
   });
 
   final String label;
@@ -23,8 +23,8 @@ class SelectableTitle extends StatefulWidget {
   final String selected;
   final ValueChanged<String> onChanged;
   final bool allowCreation;
-  final ValueChanged<String>? onCreated;
   final TextEditingController? controller;
+  final VoidCallback? onDelete;
 
   @override
   State<SelectableTitle> createState() => _SelectableTitleState();
@@ -56,19 +56,34 @@ class _SelectableTitleState extends State<SelectableTitle> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(
-          widget.label,
-          style: textTheme.labelMedium?.copyWith(
-            color: colorScheme.primary.withAlpha(153),
-            fontFamily: 'Arimo',
-          ),
+        Row(
+          children: [
+            Text(
+              widget.label,
+              style: textTheme.labelMedium?.copyWith(
+                color: colorScheme.primary.withAlpha(153),
+                fontFamily: 'Arimo',
+              ),
+            ),
+            if (widget.onDelete != null) ...[
+              const SizedBox(width: 6),
+              GestureDetector(
+                onTap: widget.onDelete,
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 16,
+                  color: colorScheme.error.withAlpha(180),
+                ),
+              ),
+            ],
+          ],
         ),
         const SizedBox(height: 8),
 
         if (showTextField)
           TextFieldBuilder.buildTextField(
             hint: "Nome da Trilha",
-            fillColor: const Color(0xFF26364C),
+            fillColor: colorScheme.surface,
             controller: _controller,
           )
         else
@@ -77,8 +92,6 @@ class _SelectableTitleState extends State<SelectableTitle> {
             selected: widget.selected,
             selectedLabel: widget.selectedLabel,
             onChanged: widget.onChanged,
-            allowCreation: widget.allowCreation,
-            onCreated: widget.onCreated,
           ),
 
         if (widget.underLabel != null) ...[
