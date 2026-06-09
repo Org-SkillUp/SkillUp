@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:math';
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -7,11 +10,20 @@ class ForgetPasswordPage extends StatefulWidget {
   State<ForgetPasswordPage> createState() => _ForgetPasswordPageState();
 }
 
+const Color primaryColor = Color(0xFF243652);
+const Color secondaryColor = Color(0xFF6FAEB3);
+const Color errorColor = Color(0xFFE63946);
+const Color textColor = Colors.white;
+final Color _accentColor = const Color(0xFF6FAEB3);
+
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   // Controllers
-  late TextEditingController _emailController;
+
+
   
   // Estado
+  late TextEditingController _emailController;
+  final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   bool _isSuccess = false;
   String? _emailError;
@@ -22,6 +34,51 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   static const Color _textColor = Colors.white;
   static const Color _errorColor = Color(0xFFE63946);
   
+
+  String _generateRandomPassword() {
+    const chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890!@#%^&*';
+    final random = Random.secure();
+    return List.generate(14, (index) => chars[random.nextInt(chars.length)]).join();
+  }
+
+
+  Future<void> _handleResetPassword() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+
+    try {
+      final email = _emailController.text.trim();
+      final newPassword = _generateRandomPassword();
+      final firestore = FirebaseFirestore.instance;
+
+      await firestore.collection('password_resets').doc(email).set({
+        'email': email,
+        'temp_password': newPassword,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      await firestore.collection('mail').add({
+        'to': email,
+        'message': {
+          'subject': 'Recuperação de Senha',
+          'text': 'Sua nova senha temporária é: $newPassword',
+        },
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Email enviado com sucesso!'), backgroundColor: _accentColor));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: ${e.toString()}'), backgroundColor: errorColor));
+      }
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+
   @override
   void initState() {
     super.initState();
