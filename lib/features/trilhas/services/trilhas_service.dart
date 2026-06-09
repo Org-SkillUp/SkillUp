@@ -1,12 +1,10 @@
 import 'package:SkillUp/core/services/firestore_service.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
-
-// TODO: atualizar registro do usuário
 
 class TrilhasService extends FirestoreService<Trilha> {
   TrilhasService() : super(
@@ -14,7 +12,6 @@ class TrilhasService extends FirestoreService<Trilha> {
     fromMap: Trilha.fromMap,
   );
 
-  // TODO: mover para service de tarefa
   Future<void> createTarefa(TarefaDetail tarefa) async {
     await firestore.collection('tarefas').add({
       ...tarefa.toMap(),
@@ -33,7 +30,7 @@ class TrilhasService extends FirestoreService<Trilha> {
 
   Future<void> updateDateField(String id, String fieldName, DateTime date) async {
     await firestore.collection(collection).doc(id).update({
-      fieldName: date,
+      fieldName: Timestamp.fromDate(date),
       'updatedBy': FirebaseAuth.instance.currentUser?.email ?? 'unknown',
       'updatedAt': FieldValue.serverTimestamp(),
     });
@@ -41,10 +38,10 @@ class TrilhasService extends FirestoreService<Trilha> {
 
   Stream<List<Trilha>> readListByUser(String email) {
     final trilhasStream = firestore
-      .collection(collection)
-      .where('createdBy', isEqualTo: email)
-      .snapshots()
-      .map((s) => s.docs.map((d) => fromMap(d.data(), d.id)).toList());
+        .collection(collection)
+        .where('createdBy', isEqualTo: email)
+        .snapshots()
+        .map((s) => s.docs.map((d) => fromMap(d.data(), d.id)).toList());
 
     return trilhasStream.switchMap((trilhas) {
       if (trilhas.isEmpty) return Stream.value([]);
@@ -56,12 +53,18 @@ class TrilhasService extends FirestoreService<Trilha> {
           .snapshots()
           .map((snap) {
             final tarefas = snap.docs
-              .map((d) => TarefaDetail.fromMap(d.data(), d.id))
-              .toList();
+                .map((d) => TarefaDetail.fromMap(d.data(), d.id))
+                .toList();
 
             final Map<String?, List<TarefaDetail>> grouped = {};
             for (final tarefa in tarefas) {
-              grouped.putIfAbsent(tarefa.metaRelacionada, () => []).add(tarefa);
+              final enriched = tarefa.copyWith(
+                trilhaNome: trilha.title,
+                metaRelacionada: tarefa.metaRelacionada,
+              );
+              grouped
+                  .putIfAbsent(tarefa.metaRelacionada, () => [])
+                  .add(enriched);
             }
 
             final classifiedLists = grouped.entries.map((entry) {

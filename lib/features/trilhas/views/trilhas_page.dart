@@ -4,6 +4,7 @@ import 'package:SkillUp/core/widgets/quantity_indicator.dart';
 import 'package:SkillUp/core/widgets/selectable_title.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
+import 'package:SkillUp/features/tarefas/routes/tarefas_navigation.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:SkillUp/features/trilhas/viewmodels/trilha_view_model.dart';
 import 'package:SkillUp/features/trilhas/views/blank_trilhas_view.dart';
@@ -12,7 +13,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TrilhasPage extends StatefulWidget {
-  const TrilhasPage({super.key});
+  const TrilhasPage({
+    super.key,
+    this.selected
+  });
+
+  final String? selected;
 
   @override
   State<TrilhasPage> createState() => _TrilhasPageState();
@@ -27,6 +33,9 @@ class _TrilhasPageState extends State<TrilhasPage> {
     super.initState();
     final email = FirebaseAuth.instance.currentUser?.email ?? 'unknown';
     _vm = TrilhasViewModel(userEmail: email);
+    _vm.setNavigationCallback(
+      (tarefa) => TarefasNavigation.goToDetalhe(context, tarefa),
+    );
   }
 
   @override
@@ -122,8 +131,20 @@ class _TrilhasPageState extends State<TrilhasPage> {
             CardListWrapper(
               title: 'TAREFAS',
               items: selected.tarefas,
-              onAddTarefa: _vm.createTarefa,
+              onAdd: () => TarefasNavigation.goToCriarTarefa(context, trilhaId: selected.id),
             ),
+
+            if (selected.tarefas.isEmpty)
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  'Nenhuma tarefa cadastrada ainda.',
+                  style: TextStyle(
+                    color: Colors.white70,
+                    fontFamily: 'Arimo',
+                  ),
+                ),
+              ),
           ],
         ),
       ),

@@ -1,13 +1,13 @@
 import 'package:SkillUp/core/widgets/bot_app_bar.dart';
 import 'package:SkillUp/core/widgets/top_app_bar.dart';
 import 'package:SkillUp/features/auth/routes/auth_routes.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:SkillUp/core/widgets/progress_card.dart';
 import 'package:SkillUp/core/widgets/warning_card.dart';
 import 'package:SkillUp/core/widgets/card_list_wrapper.dart';
 import 'package:SkillUp/core/widgets/header_card.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
 
 void toggleSelected(TarefaDetail item) {
   item.dataConclusao = item.dataConclusao == null ? DateTime.parse("2026-04-20") : null;
@@ -16,27 +16,7 @@ void toggleSelected(TarefaDetail item) {
 final homeTasks = [
   ClassifiedList(
     classifier: "Hoje",
-    items: [
-      TarefaDetail(
-        titulo: "Estudar Fluxo de Caixa",
-        trilhaId: "administracao-empresas",
-        dataInicio: DateTime.parse("2026-04-18"),
-        dataPrazo: DateTime.parse("2026-04-20"),
-        dataConclusao: null,
-        metaRelacionada: "Prova administração financeira",
-        descricao: "Leitura do material didático sobre gestão de tesouraria e resolução dos 5 exercícios práticos de projeção financeira da Unidade 2. Prazo final para envio do relatório de progresso: 20/04/2026.",
-      ),
-
-      TarefaDetail(
-        titulo: "Elaborar Plano de Marketing",
-        trilhaId: "marketing",
-        dataInicio: DateTime.parse("2026-04-23"),
-        dataPrazo: DateTime.parse("2026-04-23"),
-        dataConclusao: null,
-        metaRelacionada: "Prova marketing",
-        descricao: "Elaboração do plano de marketing para o próximo trimestre. Prazo final para envio do relatório de progresso: 23/04/2026.",
-      ),
-    ],
+    items: [],
   ),
 ];
 

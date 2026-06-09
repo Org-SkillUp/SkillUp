@@ -26,8 +26,6 @@ const _skills = [
   ),
 ];
 
-void _ignoreTap(TarefaDetail item) {}
-
 class ContaPage extends StatelessWidget {
   const ContaPage({super.key});
 
@@ -221,14 +219,8 @@ class ContaPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   ..._skills.map(
                     (skill) => CardItem(
-                      item: TarefaDetail(
-                        titulo: skill.title,
-                        trilhaId: skill.title,
-                        dataInicio: skill.dateTime,
-                        dataPrazo: skill.dateTime,
-                        metaRelacionada: skill.goal,
-                        descricao: "Descrição da tarefa.",
-                      ),
+                      // TODO: atualizar para buscar tarefas no banco
+                      item: TarefaDetail(titulo: skill.title, trilhaId: "temp"),
                       backgroundColor: Colors.transparent,
                       borderRadius: 0,
                       disableSelectedStyle: true,

@@ -1,7 +1,5 @@
 import 'package:SkillUp/core/widgets/card_item.dart';
-import 'package:SkillUp/core/widgets/field_builder.dart';
-import 'package:SkillUp/core/theme/state_button_theme.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:flutter/material.dart';
 
 class CardListWrapper extends StatefulWidget {
@@ -10,7 +8,6 @@ class CardListWrapper extends StatefulWidget {
     required this.title,
     required this.items,
     this.onAdd,
-    this.onAddTarefa,
     this.onExpand,
     this.subtitle,
   });
@@ -19,7 +16,6 @@ class CardListWrapper extends StatefulWidget {
   final String? subtitle;
   final List<ClassifiedList> items;
   final VoidCallback? onAdd;
-  final Future<void> Function(String titulo)? onAddTarefa;
   final VoidCallback? onExpand;
 
   @override
@@ -36,28 +32,9 @@ class _CardListWrapperState extends State<CardListWrapper> {
     super.dispose();
   }
 
-  Future<void> _confirmar() async {
-    final titulo = _controller.text.trim();
-    if (titulo.isEmpty) return;
-
-    await widget.onAddTarefa?.call(titulo);
-
-    if (!mounted) return;
-    _controller.clear();
-    setState(() => _showInput = false);
-  }
-
-  void _toggleInput() {
-    setState(() {
-      _showInput = !_showInput;
-      if (!_showInput) _controller.clear();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final stButton = Theme.of(context).extension<StateButtonTheme>()!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,7 +56,7 @@ class _CardListWrapperState extends State<CardListWrapper> {
                 const SizedBox(height: 4),
                 if (widget.subtitle != null)
                   Text(
-                    widget.subtitle!,
+                    '${widget.subtitle}',
                     style: TextStyle(
                       fontSize: 12,
                       fontFamily: 'Arimo',
@@ -102,9 +79,9 @@ class _CardListWrapperState extends State<CardListWrapper> {
                       ),
                     ),
                   ),
-                if (widget.onAddTarefa != null)
+                if (widget.onAdd != null)
                   IconButton(
-                    onPressed: _toggleInput,
+                    onPressed: widget.onAdd,
                     icon: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: Icon(
@@ -159,52 +136,14 @@ class _CardListWrapperState extends State<CardListWrapper> {
                 ),
                 const SizedBox(height: 12),
               ],
-              ...groupItems.map((item) => CardItem(item: item)),
+              ...groupItems.map((item) => CardItem(
+                item: item,
+                showDateIcon: true,
+                showBottomDate: true,
+              )),
             ],
           );
         }),
-
-        AnimatedSize(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut,
-          child: _showInput
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFieldBuilder.buildTextField(
-                          hint: 'Nome da tarefa',
-                          fillColor: colorScheme.surface,
-                          controller: _controller,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SizedBox(
-                        width: 48,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: _confirmar,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: stButton.plainBackgroundColor,
-                            padding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Icon(
-                            Icons.check,
-                            color: stButton.plainLabelColor,
-                            size: 20,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox.shrink(),
-        ),
       ],
     );
   }

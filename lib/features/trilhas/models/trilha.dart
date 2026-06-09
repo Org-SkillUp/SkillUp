@@ -1,6 +1,5 @@
 import 'package:SkillUp/core/models/persistence_model.dart';
-import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
-import 'package:SkillUp/features/trilhas/models/list.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 enum TrilhaStatus {

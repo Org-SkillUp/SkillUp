@@ -11,6 +11,7 @@ import 'features/auth/pages/signup_page.dart';
 import 'features/home/home_page.dart';
 import 'features/auth/routes/auth_routes.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
+import 'package:SkillUp/features/tarefas/views/tarefa_create_page.dart';
 import 'package:SkillUp/features/tarefas/views/tarefa_detail_page.dart';
 
 void main() async {
@@ -18,12 +19,18 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
   runApp(const SkillUp());
 }
 
 class SkillUp extends StatelessWidget {
   const SkillUp({super.key});
+
+  MaterialPageRoute _fallback(RouteSettings settings) {
+    return MaterialPageRoute(
+      builder: (_) => const LoginPage(),
+      settings: settings,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,7 @@ class SkillUp extends StatelessWidget {
       title: 'SkillUp',
       theme: AppTheme.mainTheme,
       debugShowCheckedModeBanner: false,
-      
+
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
@@ -42,37 +49,70 @@ class SkillUp extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            // TODO: atualizar ao implementar login funcional
-            return const HomePage(userName: "Guylherme");
+            return const HomePage(userName: 'Guylherme');
           }
 
           return const LoginPage();
-        }
+        },
       ),
-      initialRoute: AuthRoutes.login,
-      onGenerateRoute: (settings) {
-        final routes = {
-          AuthRoutes.login: (_) => const LoginPage(),
-          AuthRoutes.signup: (_) => const SignupPage(),
-          AuthRoutes.forgotPassword: (_) => const ForgetPasswordPage(),
-          AuthRoutes.trilhas: (_) => const TrilhasPage(),
-          // TODO: atualizar ao implementar login funcional
-          AuthRoutes.conta: (_) => const ContaPage(),
-          '/home': (_) => const HomePage(
-            userName: "Guylherme"
-          ),
-          AuthRoutes.tarefas: (_) => TarefaDetailPage(tarefa: TarefaDetail.mock),
-        };
 
-        final builder = routes[settings.name];
-        if (builder != null) {
-          return MaterialPageRoute(builder: builder, settings: settings);
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+
+          case AuthRoutes.tarefas:
+            final tarefa = settings.arguments as TarefaDetail?;
+            if (tarefa == null) return _fallback(settings);
+            return MaterialPageRoute(
+              builder: (_) => TarefaDetailPage(tarefa: tarefa),
+              settings: settings,
+            );
+
+          case AuthRoutes.criar:
+            final trilhaId = settings.arguments as String?;
+            return MaterialPageRoute(
+              builder: (_) => TarefaCreatePage(trilhaId: trilhaId),
+              settings: settings,
+            );
+
+          case AuthRoutes.login:
+            return MaterialPageRoute(
+              builder: (_) => const LoginPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.signup:
+            return MaterialPageRoute(
+              builder: (_) => const SignupPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.forgotPassword:
+            return MaterialPageRoute(
+              builder: (_) => const ForgetPasswordPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.trilhas:
+            return MaterialPageRoute(
+              builder: (_) => const TrilhasPage(),
+              settings: settings,
+            );
+
+          case AuthRoutes.conta:
+            return MaterialPageRoute(
+              builder: (_) => const ContaPage(),
+              settings: settings,
+            );
+
+          case '/home':
+            return MaterialPageRoute(
+              builder: (_) => const HomePage(userName: 'Guylherme'),
+              settings: settings,
+            );
+
+          default:
+            return _fallback(settings);
         }
-        
-        return MaterialPageRoute(
-          builder: (_) => const LoginPage(),
-          settings: settings,
-        );
       },
     );
   }

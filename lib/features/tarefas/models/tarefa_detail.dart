@@ -1,30 +1,90 @@
 import 'package:SkillUp/core/models/persistence_model.dart';
+import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
-/// Dados exibidos na tela de detalhe de uma tarefa.
-class TarefaDetail extends PersistenceModel {
+class TarefaDetail extends PersistenceModel implements ListItem {
   TarefaDetail({
-      super.id,
+    super.id,
     super.createdAt,
     super.updatedAt,
     super.createdBy,
+    super.updatedBy,
     required this.titulo,
     required this.trilhaId,
+    this.trilhaNome,
     this.dataInicio,
     this.dataPrazo,
     this.dataConclusao,
     this.metaRelacionada,
     this.descricao,
+    this.concluida = false,
+    this.onOpen,
   });
-
 
   final String titulo;
   final String trilhaId;
+  final String? trilhaNome;
   DateTime? dataInicio;
   DateTime? dataPrazo;
   DateTime? dataConclusao;
   String? metaRelacionada;
   String? descricao;
+  bool concluida;
+
+  @override
+  String get title => titulo;
+
+  @override
+  String? get subtitle => "Meta: $metaRelacionada";
+
+  @override
+  bool get isSelected => concluida;
+
+  @override
+  DateTime? get date => dataPrazo;
+
+  @override
+  final VoidCallback? onOpen;
+
+  @override
+  void onTap() => concluida = !concluida;
+
+  TarefaDetail copyWith({
+    String? id,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? createdBy,
+    String? updatedBy,
+    String? titulo,
+    String? trilhaId,
+    String? trilhaNome,
+    DateTime? dataInicio,
+    DateTime? dataPrazo,
+    DateTime? dataConclusao,
+    String? metaRelacionada,
+    String? descricao,
+    bool? concluida,
+    VoidCallback? onOpen,
+  }) {
+    return TarefaDetail(
+      id: id ?? this.id,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      titulo: titulo ?? this.titulo,
+      trilhaId: trilhaId ?? this.trilhaId,
+      trilhaNome: trilhaNome ?? this.trilhaNome,
+      dataInicio: dataInicio ?? this.dataInicio,
+      dataPrazo: dataPrazo ?? this.dataPrazo,
+      dataConclusao: dataConclusao ?? this.dataConclusao,
+      metaRelacionada: metaRelacionada ?? this.metaRelacionada,
+      descricao: descricao ?? this.descricao,
+      concluida: concluida ?? this.concluida,
+      onOpen: onOpen ?? this.onOpen,
+    );
+  }
 
   @override
   Map<String, dynamic> toMap() {
@@ -36,24 +96,37 @@ class TarefaDetail extends PersistenceModel {
       'dataConclusao': dataConclusao != null ? Timestamp.fromDate(dataConclusao!) : null,
       'metaRelacionada': metaRelacionada,
       'descricao': descricao,
+      'concluida': concluida,
     };
   }
 
   factory TarefaDetail.fromMap(Map<String, dynamic> map, String id) {
     return TarefaDetail(
       id: id,
+      createdAt: PersistenceModel.parseTimestamp(map['createdAt']),
+      updatedAt: PersistenceModel.parseTimestamp(map['updatedAt']),
+      createdBy: map['createdBy'] as String?,
+      updatedBy: map['updatedBy'] as String?,
       titulo: map['titulo'] ?? '',
       trilhaId: map['trilhaId'] ?? '',
-      dataInicio: (map['dataInicio'] as Timestamp?)?.toDate(),
-      dataPrazo: (map['dataPrazo'] as Timestamp?)?.toDate(),
-      dataConclusao: (map['dataConclusao'] as Timestamp?)?.toDate(),
-      metaRelacionada: map['metaRelacionada'],
-      descricao: map['descricao'],
+      dataInicio: _parseDate(map['dataInicio']),
+      dataPrazo: _parseDate(map['dataPrazo']),
+      dataConclusao: _parseDate(map['dataConclusao']),
+      metaRelacionada: map['metaRelacionada'] as String?,
+      descricao: map['descricao'] as String?,
+      concluida: map['concluida'] as bool? ?? false,
     );
   }
 
-  /// Dados mock para desenvolvimento e testes da tela de detalhe.
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
   static final mock = TarefaDetail(
+    id: 'mock',
     titulo: 'Estudar Fluxo de Caixa',
     trilhaId: 'trilha-1',
     dataInicio: DateTime(2026, 4, 18),
