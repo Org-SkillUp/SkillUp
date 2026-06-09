@@ -1,6 +1,5 @@
 import 'package:SkillUp/core/theme/card_item_theme.dart';
 import 'package:SkillUp/features/tarefas/models/list.dart';
-import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:flutter/material.dart';
 
 class CardItem extends StatelessWidget {
@@ -133,7 +132,7 @@ class CardItem extends StatelessWidget {
           if (showCheckbox)
             Checkbox(
               value: item.isSelected,
-              onChanged: (_) => item.onTap(),
+              onChanged: (_) => item.onTap?.call(),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),

@@ -23,7 +23,7 @@ class CardListWrapper extends StatefulWidget {
 }
 
 class _CardListWrapperState extends State<CardListWrapper> {
-  bool _showInput = false;
+  final bool _showInput = false;
   final _controller = TextEditingController();
 
   @override
@@ -53,8 +53,8 @@ class _CardListWrapperState extends State<CardListWrapper> {
                     fontFamily: 'Arimo',
                   ),
                 ),
-                const SizedBox(height: 4),
-                if (widget.subtitle != null)
+                if (widget.subtitle != null) ...[
+                  const SizedBox(height: 4),
                   Text(
                     '${widget.subtitle}',
                     style: TextStyle(
@@ -63,6 +63,7 @@ class _CardListWrapperState extends State<CardListWrapper> {
                       color: Colors.white.withAlpha(153),
                     ),
                   ),
+                ]
               ],
             ),
             Row(
@@ -104,8 +105,6 @@ class _CardListWrapperState extends State<CardListWrapper> {
             ),
           ],
         ),
-
-        SizedBox(height: 12),
 
         ...widget.items.map((classifiedList) {
           final classifier = classifiedList.classifier;

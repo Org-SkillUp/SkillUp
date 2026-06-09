@@ -20,6 +20,7 @@ class TarefaDetail extends PersistenceModel implements ListItem {
     this.descricao,
     this.concluida = false,
     this.onOpen,
+    this.onTap
   });
 
   final String titulo;
@@ -31,6 +32,8 @@ class TarefaDetail extends PersistenceModel implements ListItem {
   String? metaRelacionada;
   String? descricao;
   bool concluida;
+  final VoidCallback? onOpen;
+  final VoidCallback? onTap;
 
   @override
   String get title => titulo;
@@ -43,12 +46,6 @@ class TarefaDetail extends PersistenceModel implements ListItem {
 
   @override
   DateTime? get date => dataPrazo;
-
-  @override
-  final VoidCallback? onOpen;
-
-  @override
-  void onTap() => concluida = !concluida;
 
   TarefaDetail copyWith({
     String? id,
@@ -66,6 +63,7 @@ class TarefaDetail extends PersistenceModel implements ListItem {
     String? descricao,
     bool? concluida,
     VoidCallback? onOpen,
+    VoidCallback? onTap
   }) {
     return TarefaDetail(
       id: id ?? this.id,
@@ -83,6 +81,7 @@ class TarefaDetail extends PersistenceModel implements ListItem {
       descricao: descricao ?? this.descricao,
       concluida: concluida ?? this.concluida,
       onOpen: onOpen ?? this.onOpen,
+      onTap: onTap ?? this.onTap
     );
   }
 

@@ -6,7 +6,7 @@ abstract interface class ListItem {
   bool get isSelected;
   DateTime? get date;
   VoidCallback? get onOpen;
-  void onTap();
+  VoidCallback? get onTap;
 }
 
 class ClassifiedList {

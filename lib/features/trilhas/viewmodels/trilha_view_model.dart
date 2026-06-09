@@ -2,6 +2,8 @@ import 'package:SkillUp/features/tarefas/models/list.dart';
 import 'package:SkillUp/features/tarefas/models/tarefa_detail.dart';
 import 'package:SkillUp/features/trilhas/models/trilha.dart';
 import 'package:SkillUp/features/trilhas/services/trilhas_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class TrilhasViewModel extends ChangeNotifier {
@@ -9,27 +11,44 @@ class TrilhasViewModel extends ChangeNotifier {
   final String userEmail;
 
   TrilhasViewModel({required this.userEmail, TrilhasService? service})
-      : _service = service ?? TrilhasService();
+    : _service = service ?? TrilhasService();
 
   List<Trilha> _trilhas = [];
   Trilha? _selected;
   bool _isCreating = false;
   void Function(TarefaDetail)? _onOpenTarefa;
 
+  Trilha? _selectedCache;
+  Trilha? _selectedRaw;
+
   List<Trilha> get trilhas => _trilhas;
   bool get isCreating => _isCreating;
   bool get isPaused => _selected?.status == TrilhaStatus.paused;
-
   Stream<List<Trilha>> get trilhasStream => _service.readListByUser(userEmail);
 
   Trilha? get selected {
     if (_selected == null) return null;
-    return _selected!.copyWith(
-      tarefas: _selected!.tarefas.map((lista) => ClassifiedList(
+
+    if (identical(_selectedRaw, _selected) && _selectedCache != null) {
+      return _selectedCache;
+    }
+
+    _selectedRaw = _selected;
+    _selectedCache = _buildSelectedWithCallbacks(_selected!);
+    return _selectedCache;
+  }
+
+  Trilha _buildSelectedWithCallbacks(Trilha trilha) {
+    return trilha.copyWith(
+      tarefas: trilha.tarefas.map((lista) => ClassifiedList(
         classifier: lista.classifier,
         items: lista.items.map((item) {
-          if (item is TarefaDetail && _onOpenTarefa != null) {
-            return item.copyWith(onOpen: () => _onOpenTarefa!(item));
+          if (item is TarefaDetail) {
+            final taskId = item.id;
+            return item.copyWith(
+              onOpen: _onOpenTarefa != null ? () => _onOpenTarefa!(item) : null,
+              onTap: () => _toggleTaskById(taskId, item.concluida),
+            );
           }
           return item;
         }).toList(),
@@ -39,16 +58,53 @@ class TrilhasViewModel extends ChangeNotifier {
 
   void setNavigationCallback(void Function(TarefaDetail) callback) {
     _onOpenTarefa = callback;
+    // invalida o cache para reinjetar o novo callback
+    _selectedCache = null;
+    _selectedRaw = null;
+  }
+
+  // toggle por id — não depende da instância capturada pelo closure
+  Future<void> _toggleTaskById(String? taskId, bool atualConcluida) async {
+    if (taskId == null || _selected == null) return;
+
+    final novaConcluida = !atualConcluida;
+    final novaDataConclusao = novaConcluida ? DateTime.now() : null;
+
+    _selected = _selected!.copyWith(
+      tarefas: _selected!.tarefas.map((lista) => ClassifiedList(
+        classifier: lista.classifier,
+        items: lista.items.map((item) {
+          if (item is TarefaDetail && item.id == taskId) {
+            return item.copyWith(
+              concluida: novaConcluida,
+              dataConclusao: novaDataConclusao,
+            );
+          }
+          return item;
+        }).toList(),
+      )).toList(),
+    );
+
+    _sync();
+
+    await _service.updateTarefa(taskId, {
+      'concluida': novaConcluida,
+      'dataConclusao': novaDataConclusao != null
+          ? Timestamp.fromDate(novaDataConclusao)
+          : null,
+      'updatedAt': FieldValue.serverTimestamp(),
+      'updatedBy': FirebaseAuth.instance.currentUser?.email,
+    });
   }
 
   int get totalTasks =>
-      _selected?.tarefas.fold(0, (sum, cl) => sum! + cl.items.length) ?? 0;
+    _selected?.tarefas.fold(0, (sum, cl) => sum! + cl.items.length) ?? 0;
 
   int get finishedTasks =>
-      _selected?.tarefas.fold(
-        0,
-        (sum, cl) => sum! + cl.items.where((i) => i.isSelected).length,
-      ) ?? 0;
+    _selected?.tarefas.fold(
+      0,
+      (sum, cl) => sum! + cl.items.where((i) => i.isSelected).length,
+    ) ?? 0;
 
   String get progressLabel => '$finishedTasks de $totalTasks tarefas concluídas';
 
@@ -56,36 +112,16 @@ class TrilhasViewModel extends ChangeNotifier {
       ? '0%'
       : '${((finishedTasks / totalTasks) * 100).round()}%';
 
-  String get startDate {
-    final d = _selected?.startedAt;
-    if (d == null) return '—';
-    return '${d.day.toString().padLeft(2, '0')}/'
-        '${d.month.toString().padLeft(2, '0')}/'
-        '${d.year}';
-  }
-
-  String get dueDate {
-    final d = _selected?.duedate;
-    if (d == null) return '—';
-    return '${d.day.toString().padLeft(2, '0')}/'
-        '${d.month.toString().padLeft(2, '0')}/'
-        '${d.year}';
-  }
-
-  String get finishDate {
-    final d = _selected?.finishedAt;
-    if (d == null) return '—';
-    return '${d.day.toString().padLeft(2, '0')}/'
-        '${d.month.toString().padLeft(2, '0')}/'
-        '${d.year}';
-  }
-
   void onStreamData(List<Trilha> trilhas) {
-    _trilhas = trilhas;
-    final stillExists = trilhas.any((t) => t.id == _selected?.id);
+    _trilhas = List.of(trilhas);
+    final stillExists = _trilhas.any((t) => t.id == _selected?.id);
     _selected = stillExists
-        ? trilhas.firstWhere((t) => t.id == _selected!.id)
-        : trilhas.firstOrNull;
+        ? _trilhas.firstWhere((t) => t.id == _selected!.id)
+        : _trilhas.firstOrNull;
+
+    _selectedCache = null;
+    _selectedRaw = null;
+
     notifyListeners();
   }
 
@@ -94,6 +130,8 @@ class TrilhasViewModel extends ChangeNotifier {
       (t) => t.id == id,
       orElse: () => _selected!,
     );
+    _selectedCache = null;
+    _selectedRaw = null;
     notifyListeners();
   }
 
@@ -154,12 +192,10 @@ class TrilhasViewModel extends ChangeNotifier {
     if (_selected == null) return;
 
     final startedAt = novoStatus == TrilhaStatus.active && _selected!.startedAt == null
-        ? DateTime.now()
-        : _selected!.startedAt;
+        ? DateTime.now() : _selected!.startedAt;
 
     final finishedAt = novoStatus == TrilhaStatus.completed && _selected!.finishedAt == null
-        ? DateTime.now()
-        : _selected!.finishedAt;
+        ? DateTime.now() : _selected!.finishedAt;
 
     _selected = _selected!.copyWith(
       status: novoStatus,
@@ -167,14 +203,19 @@ class TrilhasViewModel extends ChangeNotifier {
       finishedAt: finishedAt,
     );
     _sync();
+
     await _service.updateStatus(_selected!.id!, novoStatus);
     if (startedAt != null) await _service.updateDateField(_selected!.id!, 'startedAt', startedAt);
     if (finishedAt != null) await _service.updateDateField(_selected!.id!, 'finishedAt', finishedAt);
   }
 
   void _sync() {
-    final idx = _trilhas.indexWhere((t) => t.id == _selected!.id);
-    if (idx != -1) _trilhas[idx] = _selected!;
+    _trilhas = [
+      for (final t in _trilhas)
+        if (t.id == _selected!.id) _selected! else t,
+    ];
+    _selectedCache = null;
+    _selectedRaw = null;
     notifyListeners();
   }
 }

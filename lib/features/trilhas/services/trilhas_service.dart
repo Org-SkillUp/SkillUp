@@ -63,8 +63,8 @@ class TrilhasService extends FirestoreService<Trilha> {
                 metaRelacionada: tarefa.metaRelacionada,
               );
               grouped
-                  .putIfAbsent(tarefa.metaRelacionada, () => [])
-                  .add(enriched);
+                .putIfAbsent(tarefa.metaRelacionada, () => [])
+                .add(enriched);
             }
 
             final classifiedLists = grouped.entries.map((entry) {
@@ -80,5 +80,9 @@ class TrilhasService extends FirestoreService<Trilha> {
 
       return Rx.combineLatestList(enrichedStreams);
     });
+  }
+
+  Future<void> updateTarefa(String id, Map<String, dynamic> fields) async {
+    await firestore.collection('tarefas').doc(id).update(fields);
   }
 }
